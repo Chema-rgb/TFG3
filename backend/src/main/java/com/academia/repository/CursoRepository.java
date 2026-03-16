@@ -1,0 +1,10 @@
+package com.academia.repository;
+
+import com.academia.model.Curso;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface CursoRepository extends JpaRepository<Curso, Long> {
+    List<Curso> findByEstado(Curso.Estado estado);
+    List<Curso> findByProfesorId(Long profesorId);
+}
