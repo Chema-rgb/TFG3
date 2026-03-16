@@ -22,6 +22,14 @@ public class PagoController {
         return pagoRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Pago> obtener(@PathVariable Long id) {
+        Pago pago = pagoRepository.findById(id).orElse(null);
+        if (pago == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(pago);
+    }
+
     @GetMapping("/alumno/{alumnoId}")
     public List<Pago> porAlumno(@PathVariable Long alumnoId) {
         return pagoRepository.findByAlumnoId(alumnoId);
@@ -35,10 +43,18 @@ public class PagoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Pago> actualizar(@PathVariable Long id, @RequestBody Pago pago) {
-        if (!pagoRepository.existsById(id)) return ResponseEntity.notFound().build();
-        pago.setId(id);
-        return ResponseEntity.ok(pagoRepository.save(pago));
+    public ResponseEntity<Pago> actualizar(@PathVariable Long id, @RequestBody Pago datos) {
+        Pago existing = pagoRepository.findById(id).orElse(null);
+        if (existing == null) return ResponseEntity.notFound().build();
+        existing.setAlumno(datos.getAlumno());
+        existing.setCurso(datos.getCurso());
+        existing.setImporte(datos.getImporte());
+        existing.setFechaPago(datos.getFechaPago());
+        existing.setFechaVencimiento(datos.getFechaVencimiento());
+        existing.setEstado(datos.getEstado());
+        existing.setConcepto(datos.getConcepto());
+        existing.setObservaciones(datos.getObservaciones());
+        return ResponseEntity.ok(pagoRepository.save(existing));
     }
 
     @DeleteMapping("/{id}")

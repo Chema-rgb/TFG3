@@ -23,6 +23,7 @@ public class Profesor {
     private String dni;
     private String telefono;
     private String especialidad;
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private Estado estado;
@@ -54,6 +55,9 @@ public class Profesor {
 
     public String getEspecialidad() { return especialidad; }
     public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public Estado getEstado() { return estado; }
     public void setEstado(Estado estado) { this.estado = estado; }

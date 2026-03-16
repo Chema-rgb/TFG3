@@ -33,8 +33,6 @@ document.getElementById('btnNuevoProfesor')?.addEventListener('click', () => {
     document.getElementById('formProfesor').reset();
     document.getElementById('profesorId').value = '';
     document.getElementById('modalProfesorTitle').textContent = 'Nuevo Profesor';
-    document.getElementById('campoProfUsuario').style.display = 'block';
-    document.getElementById('campoProfPassword').style.display = 'block';
     abrirModal('modalProfesor');
 });
 
@@ -48,9 +46,8 @@ async function editarProfesor(id) {
     document.getElementById('profesorDni').value = p.dni || '';
     document.getElementById('profesorTelefono').value = p.telefono || '';
     document.getElementById('profesorEspecialidad').value = p.especialidad || '';
+    document.getElementById('profesorEmail').value = p.email || '';
     document.getElementById('profesorEstado').value = p.estado;
-    document.getElementById('campoProfUsuario').style.display = 'none';
-    document.getElementById('campoProfPassword').style.display = 'none';
     document.getElementById('modalProfesorTitle').textContent = 'Editar Profesor';
     abrirModal('modalProfesor');
 }
@@ -71,26 +68,9 @@ document.getElementById('formProfesor').addEventListener('submit', async (e) => 
         dni: document.getElementById('profesorDni').value,
         telefono: document.getElementById('profesorTelefono').value,
         especialidad: document.getElementById('profesorEspecialidad').value,
+        email: document.getElementById('profesorEmail').value || null,
         estado: document.getElementById('profesorEstado').value
     };
-
-    if (!id) {
-        const username = document.getElementById('profesorUsername').value;
-        const password = document.getElementById('profesorPassword').value;
-        const email = document.getElementById('profesorEmail').value;
-        if (username && password && email) {
-            try {
-                const usuario = await apiFetch('/admin/usuarios', {
-                    method: 'POST',
-                    body: JSON.stringify({ username, password, email, rol: 'PROFESOR' })
-                });
-                body.usuario = { id: usuario.id };
-            } catch (err) {
-                alert('Error creando usuario: ' + err.message);
-                return;
-            }
-        }
-    }
 
     try {
         if (id) {

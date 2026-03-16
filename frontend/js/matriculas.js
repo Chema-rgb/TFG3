@@ -91,7 +91,12 @@ document.getElementById('formMatricula').addEventListener('submit', async (e) =>
         cerrarModal('modalMatricula');
         cargarMatriculas();
     } catch (err) {
-        alert('Error: ' + err.message);
+        if (err.message.includes('CURSO_COMPLETO')) {
+            cerrarModal('modalMatricula');
+            abrirModal('modalCursoCompleto');
+        } else {
+            alert('Error: ' + err.message);
+        }
     }
 });
 

@@ -1,8 +1,10 @@
 package com.academia.controller;
 
 import com.academia.model.Usuario;
+import com.academia.repository.UsuarioRepository;
 import com.academia.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,9 @@ public class AdminController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @GetMapping("/usuarios")
     public List<Usuario> listarUsuarios() {
         return usuarioService.listarTodos();
@@ -24,6 +29,13 @@ public class AdminController {
     @PostMapping("/usuarios")
     public Usuario crearUsuario(@RequestBody UsuarioRequest req) {
         return usuarioService.crear(req.getUsername(), req.getPassword(), req.getEmail(), req.getRol());
+    }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        if (!usuarioRepository.existsById(id)) return ResponseEntity.notFound().build();
+        usuarioRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     public static class UsuarioRequest {

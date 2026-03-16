@@ -1,6 +1,8 @@
 package com.academia.controller;
 
+import com.academia.model.Curso;
 import com.academia.model.Matricula;
+import com.academia.repository.CursoRepository;
 import com.academia.repository.MatriculaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,9 @@ public class MatriculaController {
 
     @Autowired
     private MatriculaRepository matriculaRepository;
+
+    @Autowired
+    private CursoRepository cursoRepository;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
@@ -43,15 +48,26 @@ public class MatriculaController {
             return ResponseEntity.badRequest().body("El alumno ya está matriculado en este curso");
         }
 
+        Curso curso = cursoRepository.findById(cursoId).orElse(null);
+        if (curso != null && curso.getCapacidad() != null) {
+            int inscritos = matriculaRepository.findByCursoId(cursoId).size();
+            if (inscritos >= curso.getCapacidad()) {
+                return ResponseEntity.status(409).body("CURSO_COMPLETO");
+            }
+        }
+
         return ResponseEntity.ok(matriculaRepository.save(matricula));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Matricula> actualizar(@PathVariable Long id, @RequestBody Matricula matricula) {
-        if (!matriculaRepository.existsById(id)) return ResponseEntity.notFound().build();
-        matricula.setId(id);
-        return ResponseEntity.ok(matriculaRepository.save(matricula));
+    public ResponseEntity<Matricula> actualizar(@PathVariable Long id, @RequestBody Matricula datos) {
+        Matricula existing = matriculaRepository.findById(id).orElse(null);
+        if (existing == null) return ResponseEntity.notFound().build();
+        existing.setAlumno(datos.getAlumno());
+        existing.setCurso(datos.getCurso());
+        existing.setEstado(datos.getEstado());
+        return ResponseEntity.ok(matriculaRepository.save(existing));
     }
 
     @DeleteMapping("/{id}")

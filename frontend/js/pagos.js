@@ -49,8 +49,7 @@ document.getElementById('btnNuevoPago').addEventListener('click', () => {
 });
 
 async function editarPago(id) {
-    const pagos = await apiFetch('/pagos');
-    const p = pagos.find(x => x.id === id);
+    const p = await apiFetch('/pagos/' + id);
     if (!p) return;
     document.getElementById('pagoId').value = p.id;
     document.getElementById('pagoAlumno').value = p.alumno?.id || '';

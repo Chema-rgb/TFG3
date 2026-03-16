@@ -63,6 +63,7 @@ function buildNav() {
         { href: 'cursos.html', label: 'Cursos', roles: ['ADMIN', 'PROFESOR', 'ALUMNO'] },
         { href: 'matriculas.html', label: 'Matrículas', roles: ['ADMIN', 'PROFESOR'] },
         { href: 'pagos.html', label: 'Pagos', roles: ['ADMIN'] },
+        { href: 'administracion.html', label: 'Administración', roles: ['ADMIN'] },
     ];
 
     links.filter(l => l.roles.includes(user.rol)).forEach(function(l) {

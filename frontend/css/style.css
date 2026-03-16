@@ -138,6 +138,11 @@ a { color: inherit; text-decoration: none; }
     border-color: var(--danger);
 }
 
+.btn-danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
 .btn-sm { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
 .btn-block { width: 100%; }
 
@@ -321,10 +326,29 @@ form { padding: 1.5rem; }
     color: var(--primary);
 }
 
+.stat-number.stat-success  { color: var(--success); }
+.stat-number.stat-warning  { color: var(--warning); }
+.stat-number.stat-danger   { color: var(--danger); }
+.stat-number.stat-secondary{ color: var(--secondary); }
+
 .stat-card .stat-label {
     font-size: 0.875rem;
     color: var(--text-light);
     margin-top: 0.25rem;
+}
+
+.stat-card .stat-sub {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 0.2rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
 }
 
 .actions-grid {

@@ -8,4 +8,6 @@ public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     List<Matricula> findByAlumnoId(Long alumnoId);
     List<Matricula> findByCursoId(Long cursoId);
     boolean existsByAlumnoIdAndCursoId(Long alumnoId, Long cursoId);
+    void deleteByAlumnoId(Long alumnoId);
+    void deleteByCursoId(Long cursoId);
 }

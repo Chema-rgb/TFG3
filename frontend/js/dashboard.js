@@ -16,10 +16,10 @@ async function cargarStats() {
         ]);
 
         stats.push(
-            { number: alumnos?.length || 0, label: 'Alumnos' },
+            { number: alumnos?.length || 0,    label: 'Alumnos' },
             { number: profesores?.length || 0, label: 'Profesores' },
-            { number: cursos?.length || 0, label: 'Cursos' },
-            { number: pagos?.filter(p => p.estado === 'PENDIENTE').length || 0, label: 'Pagos Pendientes' }
+            { number: cursos?.length || 0,     label: 'Cursos' },
+            { number: pagos?.length || 0,      label: 'Pagos Totales' }
         );
 
         actions.push(
@@ -27,7 +27,8 @@ async function cargarStats() {
             { icon: '👨‍🏫', label: 'Profesores', href: 'profesores.html' },
             { icon: '📚', label: 'Cursos', href: 'cursos.html' },
             { icon: '📋', label: 'Matrículas', href: 'matriculas.html' },
-            { icon: '💰', label: 'Pagos', href: 'pagos.html' }
+            { icon: '💰', label: 'Pagos', href: 'pagos.html' },
+            { icon: '⚙️', label: 'Administración', href: 'administracion.html' }
         );
 
     } else if (user.rol === 'PROFESOR') {

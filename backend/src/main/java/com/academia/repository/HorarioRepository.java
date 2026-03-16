@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface HorarioRepository extends JpaRepository<Horario, Long> {
     List<Horario> findByCursoId(Long cursoId);
+    void deleteByCursoId(Long cursoId);
 }

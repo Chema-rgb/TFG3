@@ -32,8 +32,6 @@ document.getElementById('btnNuevoAlumno')?.addEventListener('click', () => {
     document.getElementById('formAlumno').reset();
     document.getElementById('alumnoId').value = '';
     document.getElementById('modalAlumnoTitle').textContent = 'Nuevo Alumno';
-    document.getElementById('campoUsuario').style.display = 'block';
-    document.getElementById('campoPassword').style.display = 'block';
     abrirModal('modalAlumno');
 });
 
@@ -46,9 +44,8 @@ async function editarAlumno(id) {
     document.getElementById('alumnoTelefono').value = a.telefono || '';
     document.getElementById('alumnoDireccion').value = a.direccion || '';
     document.getElementById('alumnoFechaNacimiento').value = a.fechaNacimiento || '';
+    document.getElementById('alumnoEmail').value = a.email || '';
     document.getElementById('alumnoEstado').value = a.estado;
-    document.getElementById('campoUsuario').style.display = 'none';
-    document.getElementById('campoPassword').style.display = 'none';
     document.getElementById('modalAlumnoTitle').textContent = 'Editar Alumno';
     abrirModal('modalAlumno');
 }
@@ -70,27 +67,9 @@ document.getElementById('formAlumno').addEventListener('submit', async (e) => {
         telefono: document.getElementById('alumnoTelefono').value,
         direccion: document.getElementById('alumnoDireccion').value,
         fechaNacimiento: document.getElementById('alumnoFechaNacimiento').value || null,
+        email: document.getElementById('alumnoEmail').value || null,
         estado: document.getElementById('alumnoEstado').value,
     };
-
-    // Si es nuevo alumno, crear usuario primero
-    if (!id) {
-        const username = document.getElementById('alumnoUsername').value;
-        const password = document.getElementById('alumnoPassword').value;
-        const email = document.getElementById('alumnoEmail').value;
-        if (username && password && email) {
-            try {
-                const usuario = await apiFetch('/admin/usuarios', {
-                    method: 'POST',
-                    body: JSON.stringify({ username, password, email, rol: 'ALUMNO' })
-                });
-                body.usuario = { id: usuario.id };
-            } catch (err) {
-                alert('Error creando usuario: ' + err.message);
-                return;
-            }
-        }
-    }
 
     try {
         if (id) {
