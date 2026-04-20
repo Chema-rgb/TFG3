@@ -99,7 +99,7 @@ document.getElementById('formMatricula').addEventListener('submit', async (e) =>
         cerrarModal('modalMatricula');
         cargarMatriculas();
     } catch (err) {
-        // si el curso está lleno muestro el modal de aviso
+        // el backend devuelve CURSO_COMPLETO cuando no hay plazas
         if (err.message.includes('CURSO_COMPLETO')) {
             cerrarModal('modalMatricula');
             abrirModal('modalCursoCompleto');

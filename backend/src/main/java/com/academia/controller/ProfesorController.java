@@ -19,7 +19,6 @@ public class ProfesorController {
 
     @Autowired
     private ProfesorRepository profesorRepository;
-
     @Autowired
     private CursoRepository cursoRepository;
 

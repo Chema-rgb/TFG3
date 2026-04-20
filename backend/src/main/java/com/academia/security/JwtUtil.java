@@ -11,6 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    // la clave tiene que ser larga sino la librería da error
     private static final String SECRET = "academia-secret-key-2024-must-be-at-least-256-bits-long-for-hmac-sha";
     private static final long EXPIRACION = 24 * 60 * 60 * 1000; // 24 horas en ms
 

@@ -17,7 +17,6 @@ public class MatriculaController {
 
     @Autowired
     private MatriculaRepository matriculaRepository;
-
     @Autowired
     private CursoRepository cursoRepository;
 
@@ -48,11 +47,13 @@ public class MatriculaController {
             return ResponseEntity.badRequest().body("El alumno ya está matriculado en este curso");
         }
 
+        // compruebo si hay plazas libres
         Curso curso = cursoRepository.findById(cursoId).orElse(null);
         if (curso != null && curso.getCapacidad() != null) {
             List<Matricula> lista = matriculaRepository.findByCursoId(cursoId);
             int inscritos = lista.size();
             if (inscritos >= curso.getCapacidad()) {
+                // uso 409 para que el frontend lo distinga de otros errores
                 return ResponseEntity.status(409).body("CURSO_COMPLETO");
             }
         }

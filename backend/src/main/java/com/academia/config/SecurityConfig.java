@@ -56,7 +56,7 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // configuro el CORS para que el frontend pueda llamar al backend sin problemas
+    // sin esto el navegador bloqueaba todas las peticiones del frontend, me tiré un rato con esto
     @Bean
     public CorsConfigurationSource configurarCors() {
         CorsConfiguration config = new CorsConfiguration();

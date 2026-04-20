@@ -18,10 +18,8 @@ public class CursoController {
 
     @Autowired
     private CursoRepository cursoRepository;
-
     @Autowired
     private MatriculaRepository matriculaRepository;
-
     @Autowired
     private PagoRepository pagoRepository;
 

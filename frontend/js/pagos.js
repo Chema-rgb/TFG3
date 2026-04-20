@@ -23,7 +23,7 @@ async function cargarSelects() {
 
 var todosPagos = [];
 
-// filtro la lista según el botón que pulse
+// cada botón llama a esto con su estado
 function filtrarPorEstado(estado) {
     var filtrados = [];
     if (estado === 'TODOS') {

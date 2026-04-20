@@ -19,10 +19,8 @@ public class AlumnoController {
 
     @Autowired
     private AlumnoRepository alumnoRepository;
-
     @Autowired
     private PagoRepository pagoRepository;
-
     @Autowired
     private MatriculaRepository matriculaRepository;
 
@@ -93,8 +91,7 @@ public class AlumnoController {
         return ResponseEntity.ok(alumnoRepository.save(alumno));
     }
 
-
-    // al borrar un alumno hay que borrar también sus pagos y matrículas
+    // tuve que añadir el @Transactional porque sin él petaba al borrar si tenía matrículas
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional

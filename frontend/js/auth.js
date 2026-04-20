@@ -25,7 +25,7 @@ function verificarRol(...roles) {
     return true;
 }
 
-// función para llamar al backend con el token
+// función genérica para todas las llamadas al backend
 async function llamarApi(path, opts) {
     var metodo = opts ? opts.method || 'GET' : 'GET';
     var cuerpo = opts ? opts.body : null;
@@ -49,7 +49,7 @@ async function llamarApi(path, opts) {
     return res.json();
 }
 
-// construye el menú según el rol del usuario
+// pongo los links del menú según el rol que tenga el usuario
 function construirMenu() {
     const user = obtenerUsuario();
     if (!user) return;

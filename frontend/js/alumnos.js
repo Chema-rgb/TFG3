@@ -52,7 +52,7 @@ function mostrarAlumnos(alumnos) {
 
 async function cargarAlumnos() {
     var alumnos = await llamarApi('/alumnos');
-    todosAlumnos = alumnos || [];
+    todosAlumnos = alumnos || []; // guardo aquí para el buscador
     mostrarAlumnos(todosAlumnos);
 }
 

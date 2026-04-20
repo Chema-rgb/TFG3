@@ -91,7 +91,7 @@ async function cargarOcupacion() {
         return;
     }
 
-    // cuento las matrículas por curso
+    // cuento cuántos alumnos tiene cada curso mirando las matrículas
     const countPorCurso = {};
     if (matriculas) {
         for (let i = 0; i < matriculas.length; i++) {
@@ -163,7 +163,7 @@ async function cargarAdmins() {
         const u = admins[i];
         const fechaTexto = u.createdAt ? u.createdAt.substring(0, 10) : '-';
         let accionHtml;
-        // no dejo borrar al admin que está logueado
+        // no puede borrarse a sí mismo
         if (u.username !== currentUser.username) {
             accionHtml = '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarAdmin(' + u.id + ', \'' + u.username + '\')">Borrar</button>';
         } else {
