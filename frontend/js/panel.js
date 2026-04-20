@@ -22,9 +22,9 @@ async function cargarEstadisticas() {
         actions.push({ icon: '👨‍🎓', label: 'Alumnos', href: 'alumnos.html' });
         actions.push({ icon: '👨‍🏫', label: 'Profesores', href: 'profesores.html' });
         actions.push({ icon: '📚', label: 'Cursos', href: 'cursos.html' });
-        actions.push({ icon: '📋', label: 'Matrículas', href: 'matriculas.html' });
-        actions.push({ icon: '💰', label: 'Pagos', href: 'pagos.html' });
-        actions.push({ icon: '⚙️', label: 'Administración', href: 'administracion.html' });
+        actions.push({ icon: '📋', label: 'Matrículas', href: 'matricula.html' });
+        actions.push({ icon: '💰', label: 'Pagos', href: 'pagos_lista.html' });
+        actions.push({ icon: '⚙️', label: 'Administración', href: 'admin.html' });
 
     } else if (user.rol === 'PROFESOR') {
         var alumnos = await llamarApi('/alumnos');
@@ -35,12 +35,12 @@ async function cargarEstadisticas() {
 
         actions.push({ icon: '👨‍🎓', label: 'Alumnos', href: 'alumnos.html' });
         actions.push({ icon: '📚', label: 'Cursos', href: 'cursos.html' });
-        actions.push({ icon: '📋', label: 'Matrículas', href: 'matriculas.html' });
+        actions.push({ icon: '📋', label: 'Matrículas', href: 'matricula.html' });
 
     } else {
         // si es alumno solo ve sus cursos y pagos
         actions.push({ icon: '📚', label: 'Mis Cursos', href: 'cursos.html' });
-        actions.push({ icon: '💰', label: 'Mis Pagos', href: 'pagos.html' });
+        actions.push({ icon: '💰', label: 'Mis Pagos', href: 'pagos_lista.html' });
     }
 
     var htmlStats = '';

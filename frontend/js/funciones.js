@@ -71,9 +71,9 @@ function construirMenu() {
         { href: 'alumnos.html', label: 'Alumnos', roles: ['ADMIN', 'PROFESOR'] },
         { href: 'profesores.html', label: 'Profesores', roles: ['ADMIN'] },
         { href: 'cursos.html', label: 'Cursos', roles: ['ADMIN', 'PROFESOR', 'ALUMNO'] },
-        { href: 'matriculas.html', label: 'Matrículas', roles: ['ADMIN', 'PROFESOR'] },
-        { href: 'pagos.html', label: 'Pagos', roles: ['ADMIN'] },
-        { href: 'administracion.html', label: 'Administración', roles: ['ADMIN'] },
+        { href: 'matricula.html', label: 'Matrículas', roles: ['ADMIN', 'PROFESOR'] },
+        { href: 'pagos_lista.html', label: 'Pagos', roles: ['ADMIN'] },
+        { href: 'admin.html', label: 'Administración', roles: ['ADMIN'] },
     ];
 
     // solo muestro los links que corresponden al rol del usuario
