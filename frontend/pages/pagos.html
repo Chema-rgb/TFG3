@@ -23,6 +23,14 @@
             <button class="btn btn-primary" id="btnNuevoPago">+ Registrar Pago</button>
         </div>
 
+        <div style="margin-bottom:1rem;display:flex;gap:0.5rem">
+            <button class="btn btn-sm" onclick="filtrarPorEstado('TODOS')">Todos</button>
+            <button class="btn btn-sm" onclick="filtrarPorEstado('PENDIENTE')" style="background:#fef3c7;color:#d97706">Pendientes</button>
+            <button class="btn btn-sm" onclick="filtrarPorEstado('VENCIDO')" style="background:#fee2e2;color:#dc2626">Vencidos</button>
+            <button class="btn btn-sm" onclick="filtrarPorEstado('PAGADO')" style="background:#dcfce7;color:#16a34a;border:1px solid #16a34a">Pagados</button>
+            <button class="btn btn-sm" onclick="filtrarPorEstado('CANCELADO')" style="background:#f1f5f9;color:#64748b">Cancelados</button>
+        </div>
+
         <div class="table-container">
             <table class="tabla">
                 <thead>

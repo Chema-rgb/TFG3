@@ -25,7 +25,6 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // recibe usuario y contraseña y devuelve el token si es correcto
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> iniciarSesion(@RequestBody LoginRequest request) {
         Authentication auth = authenticationManager.authenticate(

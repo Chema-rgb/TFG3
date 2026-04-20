@@ -26,7 +26,6 @@ public class AlumnoController {
     @Autowired
     private MatriculaRepository matriculaRepository;
 
-    // devuelve la lista de todos los alumnos
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     public List<Alumno> listar() {
@@ -58,7 +57,6 @@ public class AlumnoController {
         return ResponseEntity.ok(alumnoRepository.save(alumno));
     }
 
-    // actualiza los datos, primero compruebo que el alumno existe
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Alumno datos) {

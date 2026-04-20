@@ -1,45 +1,73 @@
 async function cargarSelects() {
-    const [alumnos, cursos] = await Promise.all([llamarApi('/alumnos'), llamarApi('/cursos')]);
+    var alumnos = await llamarApi('/alumnos');
+    var cursos = await llamarApi('/cursos');
     const selAlumno = document.getElementById('pagoAlumno');
     const selCurso = document.getElementById('pagoCurso');
-    alumnos?.forEach(function(a) {
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.nombre + ' ' + a.apellidos;
-        selAlumno.appendChild(opt);
-    });
-    cursos?.forEach(function(c) {
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.nombre;
-        selCurso.appendChild(opt);
-    });
+    if (alumnos) {
+        for (var i = 0; i < alumnos.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = alumnos[i].id;
+            opt.textContent = alumnos[i].nombre + ' ' + alumnos[i].apellidos;
+            selAlumno.appendChild(opt);
+        }
+    }
+    if (cursos) {
+        for (var j = 0; j < cursos.length; j++) {
+            var opt2 = document.createElement('option');
+            opt2.value = cursos[j].id;
+            opt2.textContent = cursos[j].nombre;
+            selCurso.appendChild(opt2);
+        }
+    }
+}
+
+var todosPagos = [];
+
+// filtro la lista según el botón que pulse
+function filtrarPorEstado(estado) {
+    var filtrados = [];
+    if (estado === 'TODOS') {
+        filtrados = todosPagos;
+    } else {
+        for (var i = 0; i < todosPagos.length; i++) {
+            if (todosPagos[i].estado === estado) filtrados.push(todosPagos[i]);
+        }
+    }
+    mostrarPagos(filtrados);
+}
+
+function mostrarPagos(pagos) {
+    const tbody = document.getElementById('tbodyPagos');
+    if (!pagos || pagos.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No hay pagos</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < pagos.length; i++) {
+        var p = pagos[i];
+        var nombreAlumno = p.alumno ? p.alumno.nombre + ' ' + p.alumno.apellidos : '-';
+        html += '<tr>';
+        html += '<td>' + p.id + '</td>';
+        html += '<td>' + nombreAlumno + '</td>';
+        html += '<td>' + (p.curso ? p.curso.nombre : '-') + '</td>';
+        html += '<td>' + (p.concepto || '-') + '</td>';
+        html += '<td>' + p.importe + '€</td>';
+        html += '<td>' + (p.fechaPago || '-') + '</td>';
+        html += '<td>' + (p.fechaVencimiento || '-') + '</td>';
+        html += '<td><span class="badge badge-' + (p.estado ? p.estado.toLowerCase() : '') + '">' + p.estado + '</span></td>';
+        html += '<td class="actions-cell">';
+        html += '<button class="btn btn-sm btn-icon" onclick="editarPago(' + p.id + ')">Editar</button>';
+        html += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarPago(' + p.id + ')">Borrar</button>';
+        html += '</td>';
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
 }
 
 async function cargarPagos() {
-    const tbody = document.getElementById('tbodyPagos');
     var pagos = await llamarApi('/pagos');
-    console.log(pagos);
-    if (!pagos || pagos.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No hay pagos registrados</td></tr>';
-        return;
-    }
-    tbody.innerHTML = pagos.map(p => `
-        <tr>
-            <td>${p.id}</td>
-            <td>${p.alumno ? p.alumno.nombre + ' ' + p.alumno.apellidos : '-'}</td>
-            <td>${p.curso?.nombre || '-'}</td>
-            <td>${p.concepto || '-'}</td>
-            <td>${p.importe}€</td>
-            <td>${p.fechaPago || '-'}</td>
-            <td>${p.fechaVencimiento || '-'}</td>
-            <td><span class="badge badge-${p.estado?.toLowerCase()}">${p.estado}</span></td>
-            <td class="actions-cell">
-                <button class="btn btn-sm btn-icon" onclick="editarPago(${p.id})">Editar</button>
-                <button class="btn btn-sm btn-icon btn-danger" onclick="eliminarPago(${p.id})">Borrar</button>
-            </td>
-        </tr>
-    `).join('');
+    todosPagos = pagos || [];
+    mostrarPagos(todosPagos);
 }
 
 document.getElementById('btnNuevoPago').addEventListener('click', () => {

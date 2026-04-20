@@ -4,23 +4,27 @@ const isAdmin = user?.rol === 'ADMIN';
 if (!isAdmin) document.getElementById('btnNuevaMatricula').style.display = 'none';
 
 async function cargarSelects() {
-    const [alumnos, cursos] = await Promise.all([llamarApi('/alumnos'), llamarApi('/cursos')]);
+    var alumnos = await llamarApi('/alumnos');
+    var cursos = await llamarApi('/cursos');
     const selAlumno = document.getElementById('matriculaAlumno');
     const selCurso = document.getElementById('matriculaCurso');
 
-    alumnos?.forEach(function(a) {
-      const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.nombre + ' ' + a.apellidos;
-        selAlumno.appendChild(opt);
-    });
-
-    cursos?.forEach(function(c) {
-        const opt = document.createElement('option');
-        opt.value = c.id;
-          opt.textContent = c.nombre;
-        selCurso.appendChild(opt);
-    });
+    if (alumnos) {
+        for (var i = 0; i < alumnos.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = alumnos[i].id;
+            opt.textContent = alumnos[i].nombre + ' ' + alumnos[i].apellidos;
+            selAlumno.appendChild(opt);
+        }
+    }
+    if (cursos) {
+        for (var j = 0; j < cursos.length; j++) {
+            var opt2 = document.createElement('option');
+            opt2.value = cursos[j].id;
+            opt2.textContent = cursos[j].nombre;
+            selCurso.appendChild(opt2);
+        }
+    }
 }
 
 async function cargarMatriculas() {
@@ -30,21 +34,25 @@ async function cargarMatriculas() {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No hay matrículas registradas</td></tr>';
         return;
     }
-    tbody.innerHTML = matriculas.map(m => `
-        <tr>
-            <td>${m.id}</td>
-            <td>${m.alumno ? m.alumno.nombre + ' ' + m.alumno.apellidos : '-'}</td>
-            <td>${m.curso?.nombre || '-'}</td>
-            <td>${m.fechaMatricula || '-'}</td>
-            <td><span class="badge badge-${m.estado?.toLowerCase()}">${m.estado}</span></td>
-            <td class="actions-cell">
-                ${isAdmin ? `
-                <button class="btn btn-sm btn-icon" onclick="editarMatricula(${m.id})">Editar</button>
-                <button class="btn btn-sm btn-icon btn-danger" onclick="eliminarMatricula(${m.id})">Borrar</button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
+    var html = '';
+    for (var i = 0; i < matriculas.length; i++) {
+        var m = matriculas[i];
+        var acciones = '';
+        if (isAdmin) {
+            acciones += '<button class="btn btn-sm btn-icon" onclick="editarMatricula(' + m.id + ')">Editar</button>';
+            acciones += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarMatricula(' + m.id + ')">Borrar</button>';
+        }
+        var nombreAlumno = m.alumno ? m.alumno.nombre + ' ' + m.alumno.apellidos : '-';
+        html += '<tr>';
+        html += '<td>' + m.id + '</td>';
+        html += '<td>' + nombreAlumno + '</td>';
+        html += '<td>' + (m.curso ? m.curso.nombre : '-') + '</td>';
+        html += '<td>' + (m.fechaMatricula || '-') + '</td>';
+        html += '<td><span class="badge badge-' + (m.estado ? m.estado.toLowerCase() : '') + '">' + m.estado + '</span></td>';
+        html += '<td class="actions-cell">' + acciones + '</td>';
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
 }
 
 document.getElementById('btnNuevaMatricula')?.addEventListener('click', () => {

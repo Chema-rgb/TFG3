@@ -74,7 +74,7 @@ async function cargarVencidos() {
         html += '<td>' + nombre + '</td>';
         html += '<td>' + (p.concepto || '-') + '</td>';
         html += '<td>' + p.importe + ' €</td>';
-        html += '<td><span style="color:var(--danger);font-weight:600">' + (p.fechaVencimiento || '-') + '</span></td>';
+        html += '<td><span style="color:#dc2626;font-weight:600">' + (p.fechaVencimiento || '-') + '</span></td>';
         html += '</tr>';
     }
     tbody.innerHTML = html;
@@ -112,11 +112,11 @@ async function cargarOcupacion() {
         const capacidad = c.capacidad || null;
         const pct = capacidad ? Math.round((inscritos / capacidad) * 100) : null;
 
-        let barColor = 'var(--primary)';
+        let barColor = '#2563eb';
         if (pct !== null) {
-            if (pct >= 90) barColor = 'var(--danger)';
-            else if (pct >= 70) barColor = 'var(--warning)';
-            else barColor = 'var(--success)';
+            if (pct >= 90) barColor = '#dc2626';
+            else if (pct >= 70) barColor = '#d97706';
+            else barColor = '#16a34a';
         }
         const barWidth = pct !== null ? Math.min(pct, 100) : 0;
 
@@ -125,10 +125,10 @@ async function cargarOcupacion() {
 
         let barHtml = '-';
         if (capacidad) {
-            barHtml = '<div style="background:var(--border);border-radius:999px;height:8px;overflow:hidden">';
-            barHtml += '<div style="background:' + barColor + ';width:' + barWidth + '%;height:100%;border-radius:999px;transition:width 0.3s"></div>';
+            barHtml = '<div style="background:#e2e8f0;border-radius:999px;height:8px;overflow:hidden">';
+            barHtml += '<div style="background:' + barColor + ';width:' + barWidth + '%;height:100%;border-radius:999px"></div>';
             barHtml += '</div>';
-            barHtml += '<span style="font-size:0.78rem;color:var(--text-light)">' + pct + '%</span>';
+            barHtml += '<span style="font-size:0.78rem;color:#64748b">' + pct + '%</span>';
         }
 
         html += '<tr>';
@@ -167,7 +167,7 @@ async function cargarAdmins() {
         if (u.username !== currentUser.username) {
             accionHtml = '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarAdmin(' + u.id + ', \'' + u.username + '\')">Borrar</button>';
         } else {
-            accionHtml = '<span style="color:var(--text-light);font-size:0.8rem">Tú</span>';
+            accionHtml = '<span style="color:#64748b;font-size:0.8rem">Tú</span>';
         }
         html += '<tr>';
         html += '<td>' + u.id + '</td>';

@@ -22,6 +22,8 @@
             <button class="btn btn-primary" id="btnNuevoAlumno">+ Nuevo Alumno</button>
         </div>
 
+        <input type="text" class="buscador-tabla" id="buscador" placeholder="Buscar alumno..." oninput="buscar(this.value)">
+
         <div class="table-container">
             <table class="tabla" id="tablaAlumnos">
                 <thead>
@@ -92,6 +94,20 @@
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal DNI duplicado -->
+    <div class="modal" id="modalDniDuplicado" style="display:none">
+        <div class="modal-content" style="max-width:400px;text-align:center">
+            <div style="padding:2rem 1.5rem">
+                <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
+                <h3 style="color:var(--danger);margin-bottom:0.75rem">DNI ya registrado</h3>
+                <p style="color:var(--text-light);margin-bottom:1.5rem">
+                    Ya existe un alumno con ese DNI.<br>Comprueba los datos e inténtalo de nuevo.
+                </p>
+                <button class="btn btn-primary" onclick="cerrarModal('modalDniDuplicado')">Entendido</button>
+            </div>
         </div>
     </div>
 

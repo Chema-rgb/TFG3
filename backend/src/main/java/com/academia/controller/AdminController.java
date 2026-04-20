@@ -28,7 +28,6 @@ public class AdminController {
 
     @PostMapping("/usuarios")
     public ResponseEntity<?> crearUsuario(@RequestBody UsuarioRequest req) {
-        // compruebo que el username no esté ya cogido
         if (usuarioRepository.existsByUsername(req.getUsername())) {
             return ResponseEntity.badRequest().body("El nombre de usuario ya existe");
         }

@@ -3,30 +3,56 @@ const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevoProfesor').style.display = 'none';
 
-async function cargarProfesores() {
+var todosProfesores = [];
+
+function buscar(texto) {
+    if (!texto) {
+        mostrarProfesores(todosProfesores);
+        return;
+    }
+    var filtrados = [];
+    for (var i = 0; i < todosProfesores.length; i++) {
+        var p = todosProfesores[i];
+        if (p.nombre.toLowerCase().includes(texto.toLowerCase()) ||
+            p.apellidos.toLowerCase().includes(texto.toLowerCase())) {
+            filtrados.push(p);
+        }
+    }
+    mostrarProfesores(filtrados);
+}
+
+function mostrarProfesores(profesores) {
     const tbody = document.getElementById('tbodyProfesores');
-    var profesores = await llamarApi('/profesores');
     if (!profesores || profesores.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No hay profesores registrados</td></tr>';
         return;
     }
-    tbody.innerHTML = profesores.map(p => `
-        <tr>
-            <td>${p.id}</td>
-            <td>${p.nombre}</td>
-            <td>${p.apellidos}</td>
-            <td>${p.dni || '-'}</td>
-            <td>${p.telefono || '-'}</td>
-            <td>${p.especialidad || '-'}</td>
-            <td><span class="badge badge-${p.estado?.toLowerCase()}">${p.estado}</span></td>
-            <td class="actions-cell">
-                ${isAdmin ? `
-                <button class="btn btn-sm btn-icon" onclick="editarProfesor(${p.id})">Editar</button>
-                <button class="btn btn-sm btn-icon btn-danger" onclick="eliminarProfesor(${p.id})">Borrar</button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
+    var html = '';
+    for (var i = 0; i < profesores.length; i++) {
+        var p = profesores[i];
+        var acciones = '';
+        if (isAdmin) {
+            acciones += '<button class="btn btn-sm btn-icon" onclick="editarProfesor(' + p.id + ')">Editar</button>';
+            acciones += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarProfesor(' + p.id + ')">Borrar</button>';
+        }
+        html += '<tr>';
+        html += '<td>' + p.id + '</td>';
+        html += '<td>' + p.nombre + '</td>';
+        html += '<td>' + p.apellidos + '</td>';
+        html += '<td>' + (p.dni || '-') + '</td>';
+        html += '<td>' + (p.telefono || '-') + '</td>';
+        html += '<td>' + (p.especialidad || '-') + '</td>';
+        html += '<td><span class="badge badge-' + (p.estado ? p.estado.toLowerCase() : '') + '">' + p.estado + '</span></td>';
+        html += '<td class="actions-cell">' + acciones + '</td>';
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+async function cargarProfesores() {
+    var profesores = await llamarApi('/profesores');
+    todosProfesores = profesores || [];
+    mostrarProfesores(todosProfesores);
 }
 
 document.getElementById('btnNuevoProfesor')?.addEventListener('click', () => {
@@ -37,11 +63,10 @@ document.getElementById('btnNuevoProfesor')?.addEventListener('click', () => {
 });
 
 async function editarProfesor(id) {
-    const profesores = await llamarApi('/profesores');
-    const p = profesores.find(x => x.id === id);
+    var p = todosProfesores.find(x => x.id === id);
     if (!p) return;
-    document.querySelector('#profesorId').value = p.id;
-    document.querySelector('#profesorNombre').value = p.nombre;
+    document.getElementById('profesorId').value = p.id;
+    document.getElementById('profesorNombre').value = p.nombre;
     document.getElementById('profesorApellidos').value = p.apellidos;
     document.getElementById('profesorDni').value = p.dni || '';
     document.getElementById('profesorTelefono').value = p.telefono || '';
@@ -62,6 +87,15 @@ document.getElementById('formProfesor').addEventListener('submit', async (e) => 
     e.preventDefault();
     const id = document.getElementById('profesorId').value;
 
+    if (!document.getElementById('profesorNombre').value.trim()) {
+        alert('El nombre es obligatorio');
+        return;
+    }
+    if (!document.getElementById('profesorApellidos').value.trim()) {
+        alert('Los apellidos son obligatorios');
+        return;
+    }
+
     const body = {
         nombre: document.getElementById('profesorNombre').value,
         apellidos: document.getElementById('profesorApellidos').value,
@@ -79,9 +113,15 @@ document.getElementById('formProfesor').addEventListener('submit', async (e) => 
             await llamarApi('/profesores', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalProfesor');
+        mostrarExito('Profesor guardado correctamente');
         cargarProfesores();
     } catch (err) {
-        alert('Error: ' + err.message);
+        if (err.message.includes('DNI')) {
+            cerrarModal('modalProfesor');
+            abrirModal('modalDniDuplicado');
+        } else {
+            alert('Error: ' + err.message);
+        }
     }
 });
 

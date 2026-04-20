@@ -23,23 +23,27 @@ async function cargarCursos() {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No hay cursos registrados</td></tr>';
         return;
     }
-    tbody.innerHTML = cursos.map(c => `
-        <tr>
-            <td>${c.id}</td>
-            <td>${c.nombre}</td>
-            <td>${c.nivel || '-'}</td>
-            <td>${c.capacidad || '-'}</td>
-            <td>${c.precio ? c.precio + '€' : '-'}</td>
-            <td>${c.profesor ? c.profesor.nombre + ' ' + c.profesor.apellidos : '-'}</td>
-            <td><span class="badge badge-${c.estado?.toLowerCase()}">${c.estado}</span></td>
-            <td class="actions-cell">
-                ${isAdmin ? `
-                <button class="btn btn-sm btn-icon" onclick="editarCurso(${c.id})">Editar</button>
-                <button class="btn btn-sm btn-icon btn-danger" onclick="eliminarCurso(${c.id})">Borrar</button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
+    var html = '';
+    for (var i = 0; i < cursos.length; i++) {
+        var c = cursos[i];
+        var acciones = '';
+        if (isAdmin) {
+            acciones += '<button class="btn btn-sm btn-icon" onclick="editarCurso(' + c.id + ')">Editar</button>';
+            acciones += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarCurso(' + c.id + ')">Borrar</button>';
+        }
+        var profesor = c.profesor ? c.profesor.nombre + ' ' + c.profesor.apellidos : '-';
+        html += '<tr>';
+        html += '<td>' + c.id + '</td>';
+        html += '<td>' + c.nombre + '</td>';
+        html += '<td>' + (c.nivel || '-') + '</td>';
+        html += '<td>' + (c.capacidad || '-') + '</td>';
+        html += '<td>' + (c.precio ? c.precio + '€' : '-') + '</td>';
+        html += '<td>' + profesor + '</td>';
+        html += '<td><span class="badge badge-' + (c.estado ? c.estado.toLowerCase() : '') + '">' + c.estado + '</span></td>';
+        html += '<td class="actions-cell">' + acciones + '</td>';
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
 }
 
 document.getElementById('btnNuevoCurso')?.addEventListener('click', () => {

@@ -25,21 +25,25 @@ function verificarRol(...roles) {
     return true;
 }
 
-// hace las peticiones al backend con el token en el header
-async function llamarApi(path, opts = {}) {
-    const tok = obtenerToken();
-    const res = await fetch(API + path, {
-        ...opts,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(tok ? { 'Authorization': 'Bearer ' + tok } : {}),
-            ...(opts.headers || {})
-        }
+// función para llamar al backend con el token
+async function llamarApi(path, opts) {
+    var metodo = opts ? opts.method || 'GET' : 'GET';
+    var cuerpo = opts ? opts.body : null;
+    var tok = obtenerToken();
+
+    var cabeceras = { 'Content-Type': 'application/json' };
+    if (tok) cabeceras['Authorization'] = 'Bearer ' + tok;
+
+    var res = await fetch(API + path, {
+        method: metodo,
+        headers: cabeceras,
+        body: cuerpo || null
     });
+
     if (res.status === 401) { cerrarSesion(); return null; }
     if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg || res.statusText);
+        var msg = await res.text();
+        throw new Error(msg || 'Error en la petición');
     }
     if (res.status === 204) return null;
     return res.json();
@@ -80,6 +84,15 @@ function construirMenu() {
         if (window.location.pathname.endsWith(l.href)) a.classList.add('active');
         navLinks.appendChild(a);
     });
+}
+
+// muestro un aviso verde abajo a la derecha cuando algo se guarda bien
+function mostrarExito(msg) {
+    var toast = document.createElement('div');
+    toast.className = 'toast-ok';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() { document.body.removeChild(toast); }, 2500);
 }
 
 function cerrarModal(id) {

@@ -2,7 +2,6 @@ package com.academia.controller;
 
 import com.academia.model.Curso;
 import com.academia.repository.CursoRepository;
-import com.academia.repository.HorarioRepository;
 import com.academia.repository.MatriculaRepository;
 import com.academia.repository.PagoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,6 @@ public class CursoController {
     @Autowired
     private PagoRepository pagoRepository;
 
-    @Autowired
-    private HorarioRepository horarioRepository;
-
-    // los cursos los puede ver cualquiera aunque no esté logueado
     @GetMapping
     public List<Curso> listar() {
         return cursoRepository.findAll();
@@ -66,8 +61,6 @@ public class CursoController {
         return ResponseEntity.ok(cursoRepository.save(curso));
     }
 
-    // hay que borrar primero todo lo relacionado antes de poder borrar el curso
-    // TODO: esto hay que revisarlo, a veces da problemas con los pagos
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
@@ -75,7 +68,6 @@ public class CursoController {
         if (!cursoRepository.existsById(id)) return ResponseEntity.notFound().build();
         pagoRepository.deleteByCursoId(id);
         matriculaRepository.deleteByCursoId(id);
-        horarioRepository.deleteByCursoId(id);
         cursoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -38,19 +38,16 @@ public class MatriculaController {
         return matriculaRepository.findByCursoId(cursoId);
     }
 
-    // aquí compruebo que el alumno no esté ya matriculado y que haya sitio
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> crear(@RequestBody Matricula matricula) {
         Long alumnoId = matricula.getAlumno().getId();
         Long cursoId = matricula.getCurso().getId();
 
-        // si ya está matriculado en ese curso no lo dejo pasar
         if (matriculaRepository.existsByAlumnoIdAndCursoId(alumnoId, cursoId)) {
             return ResponseEntity.badRequest().body("El alumno ya está matriculado en este curso");
         }
 
-        // compruebo si el curso tiene límite de plazas
         Curso curso = cursoRepository.findById(cursoId).orElse(null);
         if (curso != null && curso.getCapacidad() != null) {
             List<Matricula> lista = matriculaRepository.findByCursoId(cursoId);

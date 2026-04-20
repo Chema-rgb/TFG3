@@ -1,7 +1,6 @@
 package com.academia.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "cursos")
@@ -25,9 +24,6 @@ public class Curso {
 
     @Enumerated(EnumType.STRING)
     private Estado estado;
-
-    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
-    private List<Horario> horarios;
 
     public Curso() {}
 
@@ -59,9 +55,6 @@ public class Curso {
 
     public Estado getEstado() { return estado; }
     public void setEstado(Estado estado) { this.estado = estado; }
-
-    public List<Horario> getHorarios() { return horarios; }
-    public void setHorarios(List<Horario> horarios) { this.horarios = horarios; }
 
     // para debug
     @Override

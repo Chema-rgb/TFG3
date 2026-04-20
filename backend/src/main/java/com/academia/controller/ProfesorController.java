@@ -32,15 +32,14 @@ public class ProfesorController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> crear(@RequestBody Profesor profesor) {
-        if (profesor.getDni() != null && !profesor.getDni().isEmpty()) {
-            if (profesorRepository.findByDni(profesor.getDni()).isPresent()) {
-                return ResponseEntity.badRequest().body("Ya existe un profesor con ese DNI");
-            }
+        // no puede haber dos profesores con el mismo dni
+        String dni = profesor.getDni();
+        if (dni != null && !dni.isEmpty() && profesorRepository.findByDni(dni).isPresent()) {
+            return ResponseEntity.badRequest().body("Ya existe un profesor con ese DNI");
         }
-        if (profesor.getTelefono() != null && !profesor.getTelefono().isEmpty()) {
-            if (profesorRepository.findByTelefono(profesor.getTelefono()).isPresent()) {
-                return ResponseEntity.badRequest().body("Ya existe un profesor con ese teléfono");
-            }
+        String tel = profesor.getTelefono();
+        if (tel != null && !tel.isEmpty() && profesorRepository.findByTelefono(tel).isPresent()) {
+            return ResponseEntity.badRequest().body("Ya existe un profesor con ese teléfono");
         }
         return ResponseEntity.ok(profesorRepository.save(profesor));
     }
@@ -50,15 +49,17 @@ public class ProfesorController {
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Profesor datos) {
         Profesor prof = profesorRepository.findById(id).orElse(null);
         if (prof == null) return ResponseEntity.notFound().build();
-        if (datos.getDni() != null && !datos.getDni().isEmpty()) {
-            Optional<Profesor> existente = profesorRepository.findByDni(datos.getDni());
-            if (existente.isPresent() && !existente.get().getId().equals(id)) {
+        String dni = datos.getDni();
+        if (dni != null && !dni.isEmpty()) {
+            Optional<Profesor> conEseDni = profesorRepository.findByDni(dni);
+            if (conEseDni.isPresent() && !conEseDni.get().getId().equals(id)) {
                 return ResponseEntity.badRequest().body("Ya existe un profesor con ese DNI");
             }
         }
-        if (datos.getTelefono() != null && !datos.getTelefono().isEmpty()) {
-            Optional<Profesor> existente = profesorRepository.findByTelefono(datos.getTelefono());
-            if (existente.isPresent() && !existente.get().getId().equals(id)) {
+        String tel = datos.getTelefono();
+        if (tel != null && !tel.isEmpty()) {
+            Optional<Profesor> conEseTel = profesorRepository.findByTelefono(tel);
+            if (conEseTel.isPresent() && !conEseTel.get().getId().equals(id)) {
                 return ResponseEntity.badRequest().body("Ya existe un profesor con ese teléfono");
             }
         }

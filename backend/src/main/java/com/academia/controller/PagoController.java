@@ -22,7 +22,6 @@ public class PagoController {
         return pagoRepository.findAll();
     }
 
-    // pagos de un alumno concreto
     @GetMapping("/alumno/{alumnoId}")
     public List<Pago> porAlumno(@PathVariable Long alumnoId) {
         return pagoRepository.findByAlumnoId(alumnoId);

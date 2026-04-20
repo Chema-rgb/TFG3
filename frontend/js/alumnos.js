@@ -3,9 +3,25 @@ const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevoAlumno').style.display = 'none';
 
-async function cargarAlumnos() {
+var todosAlumnos = [];
+
+function buscar(texto) {
+    if (!texto) {
+        mostrarAlumnos(todosAlumnos);
+        return;
+    }
+    var filtrados = [];
+    for (var i = 0; i < todosAlumnos.length; i++) {
+        var nombre = todosAlumnos[i].nombre + ' ' + todosAlumnos[i].apellidos;
+        if (nombre.toLowerCase().includes(texto.toLowerCase())) {
+            filtrados.push(todosAlumnos[i]);
+        }
+    }
+    mostrarAlumnos(filtrados);
+}
+
+function mostrarAlumnos(alumnos) {
     const tbody = document.getElementById('tbodyAlumnos');
-    var alumnos = await llamarApi('/alumnos');
     if (!alumnos || alumnos.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No hay alumnos registrados</td></tr>';
         return;
@@ -32,6 +48,12 @@ async function cargarAlumnos() {
         html += '</tr>';
     }
     tbody.innerHTML = html;
+}
+
+async function cargarAlumnos() {
+    var alumnos = await llamarApi('/alumnos');
+    todosAlumnos = alumnos || [];
+    mostrarAlumnos(todosAlumnos);
 }
 
 document.getElementById('btnNuevoAlumno')?.addEventListener('click', () => {
@@ -67,6 +89,16 @@ document.getElementById('formAlumno').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('alumnoId').value;
 
+    // compruebo que los campos obligatorios no estén vacíos
+    if (!document.getElementById('alumnoNombre').value.trim()) {
+        alert('El nombre es obligatorio');
+        return;
+    }
+    if (!document.getElementById('alumnoApellidos').value.trim()) {
+        alert('Los apellidos son obligatorios');
+        return;
+    }
+
     const body = {
         nombre: document.getElementById('alumnoNombre').value,
         apellidos: document.getElementById('alumnoApellidos').value,
@@ -85,9 +117,15 @@ document.getElementById('formAlumno').addEventListener('submit', async (e) => {
             await llamarApi('/alumnos', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalAlumno');
+        mostrarExito('Alumno guardado correctamente');
         cargarAlumnos();
     } catch (err) {
-        alert('Error: ' + err.message);
+        if (err.message.includes('Ya existe un alumno con ese DNI')) {
+            cerrarModal('modalAlumno');
+            abrirModal('modalDniDuplicado');
+        } else {
+            alert('Error: ' + err.message);
+        }
     }
 });
 
