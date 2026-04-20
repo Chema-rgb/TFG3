@@ -1,15 +1,15 @@
-const user = getUser();
+const user = obtenerUsuario();
 const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevaMatricula').style.display = 'none';
 
 async function cargarSelects() {
-    const [alumnos, cursos] = await Promise.all([apiFetch('/alumnos'), apiFetch('/cursos')]);
+    const [alumnos, cursos] = await Promise.all([llamarApi('/alumnos'), llamarApi('/cursos')]);
     const selAlumno = document.getElementById('matriculaAlumno');
     const selCurso = document.getElementById('matriculaCurso');
 
     alumnos?.forEach(function(a) {
-        const opt = document.createElement('option');
+      const opt = document.createElement('option');
         opt.value = a.id;
         opt.textContent = a.nombre + ' ' + a.apellidos;
         selAlumno.appendChild(opt);
@@ -18,14 +18,14 @@ async function cargarSelects() {
     cursos?.forEach(function(c) {
         const opt = document.createElement('option');
         opt.value = c.id;
-        opt.textContent = c.nombre;
+          opt.textContent = c.nombre;
         selCurso.appendChild(opt);
     });
 }
 
 async function cargarMatriculas() {
     const tbody = document.getElementById('tbodyMatriculas');
-    const matriculas = await apiFetch('/matriculas');
+    var matriculas = await llamarApi('/matriculas');
     if (!matriculas || matriculas.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No hay matrículas registradas</td></tr>';
         return;
@@ -55,7 +55,7 @@ document.getElementById('btnNuevaMatricula')?.addEventListener('click', () => {
 });
 
 async function editarMatricula(id) {
-    const matriculas = await apiFetch('/matriculas');
+    var matriculas = await llamarApi('/matriculas');
     const m = matriculas.find(x => x.id === id);
     if (!m) return;
     document.getElementById('matriculaId').value = m.id;
@@ -68,7 +68,7 @@ async function editarMatricula(id) {
 
 async function eliminarMatricula(id) {
     if (!confirm('¿Eliminar esta matrícula?')) return;
-    await apiFetch('/matriculas/' + id, { method: 'DELETE' });
+    await llamarApi('/matriculas/' + id, { method: 'DELETE' });
     cargarMatriculas();
 }
 
@@ -84,13 +84,14 @@ document.getElementById('formMatricula').addEventListener('submit', async (e) =>
 
     try {
         if (id) {
-            await apiFetch('/matriculas/' + id, { method: 'PUT', body: JSON.stringify(body) });
+            await llamarApi('/matriculas/' + id, { method: 'PUT', body: JSON.stringify(body) });
         } else {
-            await apiFetch('/matriculas', { method: 'POST', body: JSON.stringify(body) });
+            await llamarApi('/matriculas', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalMatricula');
         cargarMatriculas();
     } catch (err) {
+        // si el curso está lleno muestro el modal de aviso
         if (err.message.includes('CURSO_COMPLETO')) {
             cerrarModal('modalMatricula');
             abrirModal('modalCursoCompleto');

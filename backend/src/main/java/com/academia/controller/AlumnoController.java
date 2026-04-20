@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/alumnos")
@@ -25,6 +26,7 @@ public class AlumnoController {
     @Autowired
     private MatriculaRepository matriculaRepository;
 
+    // devuelve la lista de todos los alumnos
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     public List<Alumno> listar() {
@@ -41,26 +43,60 @@ public class AlumnoController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Alumno crear(@RequestBody Alumno alumno) {
-        return alumnoRepository.save(alumno);
+    public ResponseEntity<?> crear(@RequestBody Alumno alumno) {
+        // compruebo que el dni no esté ya usado
+        if (alumno.getDni() != null && !alumno.getDni().isEmpty()) {
+            if (alumnoRepository.findByDni(alumno.getDni()).isPresent()) {
+                return ResponseEntity.badRequest().body("Ya existe un alumno con ese DNI");
+            }
+        }
+        if (alumno.getTelefono() != null && !alumno.getTelefono().isEmpty()) {
+            if (alumnoRepository.findByTelefono(alumno.getTelefono()).isPresent()) {
+                return ResponseEntity.badRequest().body("Ya existe un alumno con ese teléfono");
+            }
+        }
+        return ResponseEntity.ok(alumnoRepository.save(alumno));
     }
 
+    // actualiza los datos, primero compruebo que el alumno existe
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Alumno> actualizar(@PathVariable Long id, @RequestBody Alumno datos) {
-        Alumno existing = alumnoRepository.findById(id).orElse(null);
-        if (existing == null) return ResponseEntity.notFound().build();
-        existing.setNombre(datos.getNombre());
-        existing.setApellidos(datos.getApellidos());
-        existing.setDni(datos.getDni());
-        existing.setTelefono(datos.getTelefono());
-        existing.setDireccion(datos.getDireccion());
-        existing.setEmail(datos.getEmail());
-        existing.setFechaNacimiento(datos.getFechaNacimiento());
-        existing.setEstado(datos.getEstado());
-        return ResponseEntity.ok(alumnoRepository.save(existing));
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Alumno datos) {
+        Alumno alumno = alumnoRepository.findById(id).orElse(null);
+        if (alumno == null) return ResponseEntity.notFound().build();
+
+        // si cambia el dni compruebo que no lo tenga ya otro alumno
+        if (datos.getDni() != null && !datos.getDni().isEmpty()) {
+            Optional<Alumno> existente = alumnoRepository.findByDni(datos.getDni());
+            if (existente.isPresent() && !existente.get().getId().equals(id)) {
+                return ResponseEntity.badRequest().body("Ya existe un alumno con ese DNI");
+            }
+        }
+        if (datos.getTelefono() != null && !datos.getTelefono().isEmpty()) {
+            Optional<Alumno> existente = alumnoRepository.findByTelefono(datos.getTelefono());
+            if (existente.isPresent() && !existente.get().getId().equals(id)) {
+                return ResponseEntity.badRequest().body("Ya existe un alumno con ese teléfono");
+            }
+        }
+
+        // por si acaso compruebo que el nombre no venga vacío
+        if (datos.getNombre() != null && !datos.getNombre().isEmpty()) {
+            alumno.setNombre(datos.getNombre());
+        }
+        alumno.setApellidos(datos.getApellidos());
+        alumno.setDni(datos.getDni());
+        alumno.setTelefono(datos.getTelefono());
+        alumno.setDireccion(datos.getDireccion());
+        alumno.setEmail(datos.getEmail());
+        alumno.setFechaNacimiento(datos.getFechaNacimiento());
+        alumno.setEstado(datos.getEstado());
+
+        System.out.println("alumno actualizado: " + id);
+        return ResponseEntity.ok(alumnoRepository.save(alumno));
     }
 
+
+    // al borrar un alumno hay que borrar también sus pagos y matrículas
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional

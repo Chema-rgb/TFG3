@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+// captura los errores de base de datos y devuelve un mensaje más claro
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -16,6 +17,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex) {
         String msg = "Error de integridad de datos";
         String cause = ex.getMostSpecificCause().getMessage();
+
+        // miro qué tipo de error es para dar un mensaje entendible
         if (cause.contains("unique constraint")) {
             if (cause.contains("username")) {
                 msg = "El nombre de usuario ya existe";
@@ -29,6 +32,7 @@ public class GlobalExceptionHandler {
         } else if (cause.contains("foreign key")) {
             msg = "No se puede realizar la operación: existen registros relacionados";
         }
+
         Map<String, String> body = new HashMap<>();
         body.put("error", msg);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);

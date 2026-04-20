@@ -29,6 +29,7 @@ public class CursoController {
     @Autowired
     private HorarioRepository horarioRepository;
 
+    // los cursos los puede ver cualquiera aunque no esté logueado
     @GetMapping
     public List<Curso> listar() {
         return cursoRepository.findAll();
@@ -49,19 +50,24 @@ public class CursoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Curso> actualizar(@PathVariable Long id, @RequestBody Curso datos) {
-        Curso existing = cursoRepository.findById(id).orElse(null);
-        if (existing == null) return ResponseEntity.notFound().build();
-        existing.setNombre(datos.getNombre());
-        existing.setDescripcion(datos.getDescripcion());
-        existing.setNivel(datos.getNivel());
-        existing.setCapacidad(datos.getCapacidad());
-        existing.setPrecio(datos.getPrecio());
-        existing.setProfesor(datos.getProfesor());
-        existing.setEstado(datos.getEstado());
-        return ResponseEntity.ok(cursoRepository.save(existing));
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Curso datos) {
+        Curso curso = cursoRepository.findById(id).orElse(null);
+        if (curso == null) return ResponseEntity.notFound().build();
+        if (datos.getPrecio() != null && datos.getPrecio() < 0) {
+            return ResponseEntity.badRequest().body("El precio no puede ser negativo");
+        }
+        curso.setNombre(datos.getNombre());
+        curso.setDescripcion(datos.getDescripcion());
+        curso.setNivel(datos.getNivel());
+        curso.setCapacidad(datos.getCapacidad());
+        curso.setPrecio(datos.getPrecio());
+        curso.setProfesor(datos.getProfesor());
+        curso.setEstado(datos.getEstado());
+        return ResponseEntity.ok(cursoRepository.save(curso));
     }
 
+    // hay que borrar primero todo lo relacionado antes de poder borrar el curso
+    // TODO: esto hay que revisarlo, a veces da problemas con los pagos
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional

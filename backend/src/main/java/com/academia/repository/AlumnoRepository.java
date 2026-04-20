@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
+
+    // para login de alumnos
     Optional<Alumno> findByUsuarioId(Long usuarioId);
+
     List<Alumno> findByEstado(Alumno.Estado estado);
+
+    Optional<Alumno> findByDni(String dni);
+    Optional<Alumno> findByTelefono(String telefono);
 }

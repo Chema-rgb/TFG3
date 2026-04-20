@@ -2,7 +2,6 @@ package com.academia.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,46 +11,44 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    @Value("${app.jwt.secret}")
-    private String secret;
+    // TODO mover a application.properties algún día
+    private static final String SECRET = "academia-secret-key-2024-must-be-at-least-256-bits-long-for-hmac-sha";
+    private static final long EXPIRACION = 86400000; // 24 horas
 
-    @Value("${app.jwt.expiration}")
-    private long expiration;
-
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    private SecretKey obtenerClave() {
+        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username, String rol) {
+    public String generarToken(String username, String rol) {
         return Jwts.builder()
                 .subject(username)
                 .claim("rol", rol)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getKey())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRACION))
+                .signWith(obtenerClave())
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return getClaims(token).getSubject();
+    public String obtenerUsername(String token) {
+        return leerClaims(token).getSubject();
     }
 
-    public String extractRol(String token) {
-        return getClaims(token).get("rol", String.class);
+    public String obtenerRol(String token) {
+        return leerClaims(token).get("rol", String.class);
     }
 
-    public boolean isValid(String token) {
+    public boolean esValido(String token) {
         try {
-            getClaims(token);
+            leerClaims(token);
             return true;
         } catch (JwtException e) {
             return false;
         }
     }
 
-    private Claims getClaims(String token) {
+    private Claims leerClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getKey())
+                .verifyWith(obtenerClave())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

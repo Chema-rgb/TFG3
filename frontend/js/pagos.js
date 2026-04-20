@@ -1,14 +1,14 @@
 async function cargarSelects() {
-    const [alumnos, cursos] = await Promise.all([apiFetch('/alumnos'), apiFetch('/cursos')]);
+    const [alumnos, cursos] = await Promise.all([llamarApi('/alumnos'), llamarApi('/cursos')]);
     const selAlumno = document.getElementById('pagoAlumno');
     const selCurso = document.getElementById('pagoCurso');
-    alumnos?.forEach(a => {
+    alumnos?.forEach(function(a) {
         const opt = document.createElement('option');
         opt.value = a.id;
         opt.textContent = a.nombre + ' ' + a.apellidos;
         selAlumno.appendChild(opt);
     });
-    cursos?.forEach(c => {
+    cursos?.forEach(function(c) {
         const opt = document.createElement('option');
         opt.value = c.id;
         opt.textContent = c.nombre;
@@ -18,7 +18,8 @@ async function cargarSelects() {
 
 async function cargarPagos() {
     const tbody = document.getElementById('tbodyPagos');
-    const pagos = await apiFetch('/pagos');
+    var pagos = await llamarApi('/pagos');
+    console.log(pagos);
     if (!pagos || pagos.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No hay pagos registrados</td></tr>';
         return;
@@ -49,7 +50,7 @@ document.getElementById('btnNuevoPago').addEventListener('click', () => {
 });
 
 async function editarPago(id) {
-    const p = await apiFetch('/pagos/' + id);
+    const p = await llamarApi('/pagos/' + id);
     if (!p) return;
     document.getElementById('pagoId').value = p.id;
     document.getElementById('pagoAlumno').value = p.alumno?.id || '';
@@ -66,7 +67,7 @@ async function editarPago(id) {
 
 async function eliminarPago(id) {
     if (!confirm('¿Eliminar este pago?')) return;
-    await apiFetch('/pagos/' + id, { method: 'DELETE' });
+    await llamarApi('/pagos/' + id, { method: 'DELETE' });
     cargarPagos();
 }
 
@@ -88,9 +89,9 @@ document.getElementById('formPago').addEventListener('submit', async (e) => {
 
     try {
         if (id) {
-            await apiFetch('/pagos/' + id, { method: 'PUT', body: JSON.stringify(body) });
+            await llamarApi('/pagos/' + id, { method: 'PUT', body: JSON.stringify(body) });
         } else {
-            await apiFetch('/pagos', { method: 'POST', body: JSON.stringify(body) });
+            await llamarApi('/pagos', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalPago');
         cargarPagos();

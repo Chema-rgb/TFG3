@@ -22,17 +22,18 @@ public class PagoController {
         return pagoRepository.findAll();
     }
 
+    // pagos de un alumno concreto
+    @GetMapping("/alumno/{alumnoId}")
+    public List<Pago> porAlumno(@PathVariable Long alumnoId) {
+        return pagoRepository.findByAlumnoId(alumnoId);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Pago> obtener(@PathVariable Long id) {
         Pago pago = pagoRepository.findById(id).orElse(null);
         if (pago == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(pago);
-    }
-
-    @GetMapping("/alumno/{alumnoId}")
-    public List<Pago> porAlumno(@PathVariable Long alumnoId) {
-        return pagoRepository.findByAlumnoId(alumnoId);
     }
 
     @PostMapping
@@ -44,17 +45,17 @@ public class PagoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Pago> actualizar(@PathVariable Long id, @RequestBody Pago datos) {
-        Pago existing = pagoRepository.findById(id).orElse(null);
-        if (existing == null) return ResponseEntity.notFound().build();
-        existing.setAlumno(datos.getAlumno());
-        existing.setCurso(datos.getCurso());
-        existing.setImporte(datos.getImporte());
-        existing.setFechaPago(datos.getFechaPago());
-        existing.setFechaVencimiento(datos.getFechaVencimiento());
-        existing.setEstado(datos.getEstado());
-        existing.setConcepto(datos.getConcepto());
-        existing.setObservaciones(datos.getObservaciones());
-        return ResponseEntity.ok(pagoRepository.save(existing));
+        Pago pago = pagoRepository.findById(id).orElse(null);
+        if (pago == null) return ResponseEntity.notFound().build();
+        pago.setAlumno(datos.getAlumno());
+        pago.setCurso(datos.getCurso());
+        pago.setImporte(datos.getImporte());
+        pago.setFechaPago(datos.getFechaPago());
+        pago.setFechaVencimiento(datos.getFechaVencimiento());
+        pago.setEstado(datos.getEstado());
+        pago.setConcepto(datos.getConcepto());
+        pago.setObservaciones(datos.getObservaciones());
+        return ResponseEntity.ok(pagoRepository.save(pago));
     }
 
     @DeleteMapping("/{id}")

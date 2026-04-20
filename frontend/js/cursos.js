@@ -1,22 +1,24 @@
-const user = getUser();
+const user = obtenerUsuario();
 const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevoCurso').style.display = 'none';
 
 async function cargarProfesoresSelect() {
-    const profesores = await apiFetch('/profesores');
+    var profesores = await llamarApi('/profesores');
     const select = document.getElementById('cursoProfesor');
-    profesores?.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = p.nombre + ' ' + p.apellidos;
-        select.appendChild(opt);
-    });
+    if (profesores) {
+        for (var i = 0; i < profesores.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = profesores[i].id;
+            opt.textContent = profesores[i].nombre + ' ' + profesores[i].apellidos;
+            select.appendChild(opt);
+        }
+    }
 }
 
 async function cargarCursos() {
     const tbody = document.getElementById('tbodyCursos');
-    const cursos = await apiFetch('/cursos');
+    var cursos = await llamarApi('/cursos');
     if (!cursos || cursos.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No hay cursos registrados</td></tr>';
         return;
@@ -48,7 +50,7 @@ document.getElementById('btnNuevoCurso')?.addEventListener('click', () => {
 });
 
 async function editarCurso(id) {
-    const c = await apiFetch('/cursos/' + id);
+    const c = await llamarApi('/cursos/' + id);
     document.getElementById('cursoId').value = c.id;
     document.getElementById('cursoNombre').value = c.nombre;
     document.getElementById('cursoNivel').value = c.nivel || '';
@@ -63,7 +65,7 @@ async function editarCurso(id) {
 
 async function eliminarCurso(id) {
     if (!confirm('¿Eliminar este curso?')) return;
-    await apiFetch('/cursos/' + id, { method: 'DELETE' });
+    await llamarApi('/cursos/' + id, { method: 'DELETE' });
     cargarCursos();
 }
 
@@ -84,9 +86,9 @@ document.getElementById('formCurso').addEventListener('submit', async (e) => {
 
     try {
         if (id) {
-            await apiFetch('/cursos/' + id, { method: 'PUT', body: JSON.stringify(body) });
+            await llamarApi('/cursos/' + id, { method: 'PUT', body: JSON.stringify(body) });
         } else {
-            await apiFetch('/cursos', { method: 'POST', body: JSON.stringify(body) });
+            await llamarApi('/cursos', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalCurso');
         cargarCursos();

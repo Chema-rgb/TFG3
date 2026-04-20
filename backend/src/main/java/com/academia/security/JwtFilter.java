@@ -29,9 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            if (jwtUtil.isValid(token)) {
-                String username = jwtUtil.extractUsername(token);
-                String rol = jwtUtil.extractRol(token);
+            if (jwtUtil.esValido(token)) {
+                String username = jwtUtil.obtenerUsername(token);
+                String rol = jwtUtil.obtenerRol(token);
                 var auth = new UsernamePasswordAuthenticationToken(
                         username, null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + rol))

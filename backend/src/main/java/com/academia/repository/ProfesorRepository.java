@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProfesorRepository extends JpaRepository<Profesor, Long> {
+
     Optional<Profesor> findByUsuarioId(Long usuarioId);
     List<Profesor> findByEstado(Profesor.Estado estado);
+
+    Optional<Profesor> findByDni(String dni);
+    Optional<Profesor> findByTelefono(String telefono);
 }

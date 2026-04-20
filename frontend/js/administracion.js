@@ -1,8 +1,8 @@
-const currentUser = getUser();
+const currentUser = obtenerUsuario();
 if (currentUser?.rol !== 'ADMIN') window.location.href = '/pages/dashboard.html';
 
 async function cargarStatsPagos() {
-    const pagos = await apiFetch('/pagos');
+    const pagos = await llamarApi('/pagos');
     if (!pagos) return;
 
     const pendientes = [];
@@ -10,12 +10,13 @@ async function cargarStatsPagos() {
     const vencidos = [];
     const cancelados = [];
 
+    // separo los pagos por estado
     for (let i = 0; i < pagos.length; i++) {
         const p = pagos[i];
         if (p.estado === 'PENDIENTE') pendientes.push(p);
-        else if (p.estado === 'PAGADO') pagados.push(p);
+          else if (p.estado === 'PAGADO') pagados.push(p);
         else if (p.estado === 'VENCIDO') vencidos.push(p);
-        else if (p.estado === 'CANCELADO') cancelados.push(p);
+       else if (p.estado === 'CANCELADO') cancelados.push(p);
     }
 
     let totalRecaudado = 0;
@@ -29,10 +30,10 @@ async function cargarStatsPagos() {
     }
 
     const stats = [
-        { number: totalRecaudado.toFixed(2) + ' €', label: 'Total Recaudado',   sub: pagados.length + ' pagos',    color: 'success'   },
-        { number: pendientes.length,                 label: 'Pagos Pendientes',  sub: totalPendiente.toFixed(2) + ' €', color: 'warning' },
-        { number: vencidos.length,                   label: 'Pagos Vencidos',    sub: '',                            color: 'danger'    },
-        { number: cancelados.length,                 label: 'Pagos Cancelados',  sub: '',                            color: 'secondary' },
+        { number: totalRecaudado.toFixed(2) + ' €', label: 'Total Recaudado', sub: pagados.length + ' pagos', color: 'success' },
+        { number: pendientes.length, label: 'Pagos Pendientes', sub: totalPendiente.toFixed(2) + ' €', color: 'warning' },
+        { number: vencidos.length, label: 'Pagos Vencidos', sub: '', color: 'danger' },
+        { number: cancelados.length, label: 'Pagos Cancelados', sub: '', color: 'secondary' },
     ];
 
     let html = '';
@@ -50,7 +51,7 @@ async function cargarStatsPagos() {
 }
 
 async function cargarVencidos() {
-    const pagos = await apiFetch('/pagos');
+    const pagos = await llamarApi('/pagos');
     const tbody = document.getElementById('tbodyVencidos');
 
     const vencidos = [];
@@ -79,9 +80,10 @@ async function cargarVencidos() {
     tbody.innerHTML = html;
 }
 
+// tabla con cuántos alumnos tiene cada curso y el porcentaje de ocupación
 async function cargarOcupacion() {
-    const cursos = await apiFetch('/cursos');
-    const matriculas = await apiFetch('/matriculas');
+    const cursos = await llamarApi('/cursos');
+    const matriculas = await llamarApi('/matriculas');
     const tbody = document.getElementById('tbodyOcupacion');
 
     if (!cursos || cursos.length === 0) {
@@ -89,6 +91,7 @@ async function cargarOcupacion() {
         return;
     }
 
+    // cuento las matrículas por curso
     const countPorCurso = {};
     if (matriculas) {
         for (let i = 0; i < matriculas.length; i++) {
@@ -140,7 +143,7 @@ async function cargarOcupacion() {
 }
 
 async function cargarAdmins() {
-    const usuarios = await apiFetch('/admin/usuarios');
+    const usuarios = await llamarApi('/admin/usuarios');
     const tbody = document.getElementById('tbodyAdmins');
 
     const admins = [];
@@ -160,6 +163,7 @@ async function cargarAdmins() {
         const u = admins[i];
         const fechaTexto = u.createdAt ? u.createdAt.substring(0, 10) : '-';
         let accionHtml;
+        // no dejo borrar al admin que está logueado
         if (u.username !== currentUser.username) {
             accionHtml = '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarAdmin(' + u.id + ', \'' + u.username + '\')">Borrar</button>';
         } else {
@@ -179,7 +183,7 @@ async function cargarAdmins() {
 async function eliminarAdmin(id, username) {
     if (!confirm('¿Eliminar administrador "' + username + '"?')) return;
     try {
-        await apiFetch('/admin/usuarios/' + id, { method: 'DELETE' });
+        await llamarApi('/admin/usuarios/' + id, { method: 'DELETE' });
         cargarAdmins();
     } catch (err) {
         alert('Error: ' + err.message);
@@ -194,7 +198,7 @@ document.getElementById('btnNuevoAdmin').addEventListener('click', function() {
 document.getElementById('formAdmin').addEventListener('submit', async function(e) {
     e.preventDefault();
     try {
-        await apiFetch('/admin/usuarios', {
+        await llamarApi('/admin/usuarios', {
             method: 'POST',
             body: JSON.stringify({
                 username: document.getElementById('adminUsername').value,

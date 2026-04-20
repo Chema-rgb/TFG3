@@ -39,7 +39,9 @@ public class Alumno {
 
     @PrePersist
     public void prePersist() {
-        fechaInscripcion = LocalDate.now();
+        if (fechaInscripcion == null) {
+            fechaInscripcion = LocalDate.now();
+        }
         if (estado == null) estado = Estado.ACTIVO;
     }
 
@@ -49,11 +51,21 @@ public class Alumno {
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
 
     public String getDni() { return dni; }
     public void setDni(String dni) { this.dni = dni; }

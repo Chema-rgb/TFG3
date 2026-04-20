@@ -7,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +17,7 @@ public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    // esto lo necesita Spring Security para el login, sin esto no funciona la autenticación
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByUsername(username)
@@ -33,19 +30,5 @@ public class UsuarioService implements UserDetailsService {
                 usuario.getPassword(),
                 List.of(authority)
         );
-    }
-
-    public Usuario crear(String username, String password, String email, Usuario.Rol rol) {
-        Usuario usuario = new Usuario();
-        usuario.setUsername(username);
-        usuario.setPassword(passwordEncoder.encode(password));
-        usuario.setEmail(email);
-        usuario.setRol(rol);
-        usuario.setActivo(true);
-        return usuarioRepository.save(usuario);
-    }
-
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
     }
 }

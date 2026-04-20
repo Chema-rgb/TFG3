@@ -38,19 +38,23 @@ public class MatriculaController {
         return matriculaRepository.findByCursoId(cursoId);
     }
 
+    // aquí compruebo que el alumno no esté ya matriculado y que haya sitio
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> crear(@RequestBody Matricula matricula) {
         Long alumnoId = matricula.getAlumno().getId();
         Long cursoId = matricula.getCurso().getId();
 
+        // si ya está matriculado en ese curso no lo dejo pasar
         if (matriculaRepository.existsByAlumnoIdAndCursoId(alumnoId, cursoId)) {
             return ResponseEntity.badRequest().body("El alumno ya está matriculado en este curso");
         }
 
+        // compruebo si el curso tiene límite de plazas
         Curso curso = cursoRepository.findById(cursoId).orElse(null);
         if (curso != null && curso.getCapacidad() != null) {
-            int inscritos = matriculaRepository.findByCursoId(cursoId).size();
+            List<Matricula> lista = matriculaRepository.findByCursoId(cursoId);
+            int inscritos = lista.size();
             if (inscritos >= curso.getCapacidad()) {
                 return ResponseEntity.status(409).body("CURSO_COMPLETO");
             }
@@ -62,12 +66,12 @@ public class MatriculaController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Matricula> actualizar(@PathVariable Long id, @RequestBody Matricula datos) {
-        Matricula existing = matriculaRepository.findById(id).orElse(null);
-        if (existing == null) return ResponseEntity.notFound().build();
-        existing.setAlumno(datos.getAlumno());
-        existing.setCurso(datos.getCurso());
-        existing.setEstado(datos.getEstado());
-        return ResponseEntity.ok(matriculaRepository.save(existing));
+        Matricula m = matriculaRepository.findById(id).orElse(null);
+        if (m == null) return ResponseEntity.notFound().build();
+        m.setAlumno(datos.getAlumno());
+        m.setCurso(datos.getCurso());
+        m.setEstado(datos.getEstado());
+        return ResponseEntity.ok(matriculaRepository.save(m));
     }
 
     @DeleteMapping("/{id}")

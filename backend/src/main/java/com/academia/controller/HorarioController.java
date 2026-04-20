@@ -21,6 +21,7 @@ public class HorarioController {
         return horarioRepository.findAll();
     }
 
+    // horarios filtrados por curso
     @GetMapping("/curso/{cursoId}")
     public List<Horario> porCurso(@PathVariable Long cursoId) {
         return horarioRepository.findByCursoId(cursoId);

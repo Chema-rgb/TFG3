@@ -25,14 +25,15 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    // recibe usuario y contraseña y devuelve el token si es correcto
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> iniciarSesion(@RequestBody LoginRequest request) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
         Usuario usuario = usuarioRepository.findByUsername(auth.getName()).orElseThrow();
-        String token = jwtUtil.generateToken(usuario.getUsername(), usuario.getRol().name());
+        String token = jwtUtil.generarToken(usuario.getUsername(), usuario.getRol().name());
 
         return ResponseEntity.ok(new LoginResponse(token, usuario.getUsername(), usuario.getRol().name()));
     }

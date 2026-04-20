@@ -1,11 +1,11 @@
-const user = getUser();
+const user = obtenerUsuario();
 const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevoProfesor').style.display = 'none';
 
 async function cargarProfesores() {
     const tbody = document.getElementById('tbodyProfesores');
-    const profesores = await apiFetch('/profesores');
+    var profesores = await llamarApi('/profesores');
     if (!profesores || profesores.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No hay profesores registrados</td></tr>';
         return;
@@ -37,11 +37,11 @@ document.getElementById('btnNuevoProfesor')?.addEventListener('click', () => {
 });
 
 async function editarProfesor(id) {
-    const profesores = await apiFetch('/profesores');
+    const profesores = await llamarApi('/profesores');
     const p = profesores.find(x => x.id === id);
     if (!p) return;
-    document.getElementById('profesorId').value = p.id;
-    document.getElementById('profesorNombre').value = p.nombre;
+    document.querySelector('#profesorId').value = p.id;
+    document.querySelector('#profesorNombre').value = p.nombre;
     document.getElementById('profesorApellidos').value = p.apellidos;
     document.getElementById('profesorDni').value = p.dni || '';
     document.getElementById('profesorTelefono').value = p.telefono || '';
@@ -54,7 +54,7 @@ async function editarProfesor(id) {
 
 async function eliminarProfesor(id) {
     if (!confirm('¿Eliminar este profesor?')) return;
-    await apiFetch('/profesores/' + id, { method: 'DELETE' });
+    await llamarApi('/profesores/' + id, { method: 'DELETE' });
     cargarProfesores();
 }
 
@@ -74,9 +74,9 @@ document.getElementById('formProfesor').addEventListener('submit', async (e) => 
 
     try {
         if (id) {
-            await apiFetch('/profesores/' + id, { method: 'PUT', body: JSON.stringify(body) });
+            await llamarApi('/profesores/' + id, { method: 'PUT', body: JSON.stringify(body) });
         } else {
-            await apiFetch('/profesores', { method: 'POST', body: JSON.stringify(body) });
+            await llamarApi('/profesores', { method: 'POST', body: JSON.stringify(body) });
         }
         cerrarModal('modalProfesor');
         cargarProfesores();

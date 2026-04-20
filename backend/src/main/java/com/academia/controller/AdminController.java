@@ -2,10 +2,10 @@ package com.academia.controller;
 
 import com.academia.model.Usuario;
 import com.academia.repository.UsuarioRepository;
-import com.academia.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,19 +16,29 @@ import java.util.List;
 public class AdminController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/usuarios")
     public List<Usuario> listarUsuarios() {
-        return usuarioService.listarTodos();
+        return usuarioRepository.findAll();
     }
 
     @PostMapping("/usuarios")
-    public Usuario crearUsuario(@RequestBody UsuarioRequest req) {
-        return usuarioService.crear(req.getUsername(), req.getPassword(), req.getEmail(), req.getRol());
+    public ResponseEntity<?> crearUsuario(@RequestBody UsuarioRequest req) {
+        // compruebo que el username no esté ya cogido
+        if (usuarioRepository.existsByUsername(req.getUsername())) {
+            return ResponseEntity.badRequest().body("El nombre de usuario ya existe");
+        }
+        Usuario u = new Usuario();
+        u.setUsername(req.getUsername());
+        u.setPassword(passwordEncoder.encode(req.getPassword()));
+        u.setEmail(req.getEmail());
+        u.setRol(req.getRol());
+        u.setActivo(true);
+        return ResponseEntity.ok(usuarioRepository.save(u));
     }
 
     @DeleteMapping("/usuarios/{id}")
@@ -38,6 +48,7 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    // datos del formulario
     public static class UsuarioRequest {
         private String username;
         private String password;

@@ -1,6 +1,6 @@
-const user = getUser();
+const user = obtenerUsuario();
 
-async function cargarStats() {
+async function cargarEstadisticas() {
     const statsGrid = document.getElementById('statsGrid');
     const actionsGrid = document.getElementById('actionsGrid');
 
@@ -8,11 +8,12 @@ async function cargarStats() {
     const actions = [];
 
     if (user.rol === 'ADMIN') {
+        // el admin ve todos los contadores
         const [alumnos, profesores, cursos, pagos] = await Promise.all([
-            apiFetch('/alumnos'),
-            apiFetch('/profesores'),
-            apiFetch('/cursos'),
-            apiFetch('/pagos')
+            llamarApi('/alumnos'),
+            llamarApi('/profesores'),
+            llamarApi('/cursos'),
+            llamarApi('/pagos')
         ]);
 
         stats.push(
@@ -33,12 +34,12 @@ async function cargarStats() {
 
     } else if (user.rol === 'PROFESOR') {
         const [alumnos, cursos] = await Promise.all([
-            apiFetch('/alumnos'),
-            apiFetch('/cursos')
+            llamarApi('/alumnos'),
+            llamarApi('/cursos')
         ]);
         stats.push(
             { number: alumnos?.length || 0, label: 'Total Alumnos' },
-            { number: cursos?.length || 0, label: 'Total Cursos' }
+            { number: cursos?.length || 0,  label: 'Total Cursos' }
         );
         actions.push(
             { icon: '👨‍🎓', label: 'Alumnos', href: 'alumnos.html' },
@@ -47,7 +48,7 @@ async function cargarStats() {
         );
 
     } else {
-        // ALUMNO
+        // si es alumno solo ve sus cursos y pagos
         actions.push(
             { icon: '📚', label: 'Mis Cursos', href: 'cursos.html' },
             { icon: '💰', label: 'Mis Pagos', href: 'pagos.html' }
@@ -69,4 +70,4 @@ async function cargarStats() {
     `).join('');
 }
 
-cargarStats();
+cargarEstadisticas();

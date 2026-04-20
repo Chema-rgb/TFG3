@@ -1,19 +1,23 @@
 const API = 'http://localhost:8082/api';
 
-function getToken() { return localStorage.getItem('token'); }
-function getUser() { return JSON.parse(localStorage.getItem('user') || 'null'); }
-function logout() { localStorage.clear(); window.location.href = '/index.html'; }
+function obtenerToken() { return localStorage.getItem('token'); }
+function obtenerUsuario() { return JSON.parse(localStorage.getItem('user') || 'null'); }
 
-function requireAuth() {
-    if (!getToken()) {
+function cerrarSesion() {
+    localStorage.clear();
+    window.location.href = '/index.html';
+}
+
+function verificarAcceso() {
+    if (!obtenerToken()) {
         window.location.href = '/index.html';
         return false;
     }
     return true;
 }
 
-function requireRole(...roles) {
-    var user = getUser();
+function verificarRol(...roles) {
+    var user = obtenerUsuario();
     if (!user || !roles.includes(user.rol)) {
         window.location.href = '/pages/dashboard.html';
         return false;
@@ -21,8 +25,9 @@ function requireRole(...roles) {
     return true;
 }
 
-async function apiFetch(path, opts = {}) {
-    const tok = getToken();
+// hace las peticiones al backend con el token en el header
+async function llamarApi(path, opts = {}) {
+    const tok = obtenerToken();
     const res = await fetch(API + path, {
         ...opts,
         headers: {
@@ -31,7 +36,7 @@ async function apiFetch(path, opts = {}) {
             ...(opts.headers || {})
         }
     });
-    if (res.status === 401) { logout(); return null; }
+    if (res.status === 401) { cerrarSesion(); return null; }
     if (!res.ok) {
         const msg = await res.text();
         throw new Error(msg || res.statusText);
@@ -40,8 +45,9 @@ async function apiFetch(path, opts = {}) {
     return res.json();
 }
 
-function buildNav() {
-    const user = getUser();
+// construye el menú según el rol del usuario
+function construirMenu() {
+    const user = obtenerUsuario();
     if (!user) return;
 
     const navUsername = document.getElementById('navUsername');
@@ -66,6 +72,7 @@ function buildNav() {
         { href: 'administracion.html', label: 'Administración', roles: ['ADMIN'] },
     ];
 
+    // solo muestro los links que corresponden al rol del usuario
     links.filter(l => l.roles.includes(user.rol)).forEach(function(l) {
         const a = document.createElement('a');
         a.href = l.href;
@@ -94,13 +101,14 @@ if (loginForm) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: document.getElementById('username').value,
+                  username: document.getElementById('username').value,
                     password: document.getElementById('password').value
                 })
             });
             if (!res.ok) throw new Error('Credenciales incorrectas');
             const data = await res.json();
-            localStorage.setItem('token', data.token);
+            console.log(data);
+              localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify({ username: data.username, rol: data.rol }));
             window.location.href = 'pages/dashboard.html';
         } catch (err) {
@@ -109,6 +117,6 @@ if (loginForm) {
         }
     });
 } else {
-    if (!getToken()) window.location.href = '/index.html';
-    buildNav();
+    if (!obtenerToken()) window.location.href = '/index.html';
+    construirMenu();
 }

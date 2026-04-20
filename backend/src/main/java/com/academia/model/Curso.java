@@ -63,6 +63,12 @@ public class Curso {
     public List<Horario> getHorarios() { return horarios; }
     public void setHorarios(List<Horario> horarios) { this.horarios = horarios; }
 
+    // para debug
+    @Override
+    public String toString() {
+        return "Curso{id=" + id + ", nombre='" + nombre + "'}";
+    }
+
     public enum Estado {
         ACTIVO, INACTIVO, COMPLETO
     }
