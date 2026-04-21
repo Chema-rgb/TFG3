@@ -50,9 +50,11 @@ async function cargarEstadisticas() {
         actions.push({ icon: '📋', label: 'Matrículas', href: 'matricula.html' });
 
     } else {
-        // si es alumno solo ve sus cursos y pagos
-        actions.push({ icon: '📚', label: 'Mis Cursos', href: 'cursos.html' });
-        actions.push({ icon: '💰', label: 'Mis Pagos', href: 'pagos_lista.html' });
+        // TODO: panel del alumno en proceso, de momento muestro aviso
+        titulo.textContent = 'Panel del Alumno';
+        statsGrid.innerHTML = '<p style="color:#888; font-style:italic; padding: 2rem 0;">Sección en proceso. Próximamente podrás consultar tus cursos, matrículas y pagos desde aquí.</p>';
+        actionsGrid.innerHTML = '';
+        return;
     }
 
     var htmlStats = '';
