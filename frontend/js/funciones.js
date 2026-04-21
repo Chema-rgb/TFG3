@@ -1,6 +1,6 @@
 // funciones comunes que uso en todas las páginas
 
-const API = 'http://localhost:8082/api';
+const API = 'http://127.0.0.1:8082/api';
 
 function obtenerToken() { return localStorage.getItem('token'); }
 function obtenerUsuario() { return JSON.parse(localStorage.getItem('user') || 'null'); }
@@ -114,16 +114,15 @@ if (loginForm) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  username: document.getElementById('username').value,
+                    username: document.getElementById('username').value,
                     password: document.getElementById('password').value
                 })
             });
             if (!res.ok) throw new Error('Credenciales incorrectas');
             const data = await res.json();
-            console.log(data);
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify({ username: data.username, rol: data.rol }));
-            window.location.href = 'pages/dashboard.html';
+            window.location.replace('/pages/dashboard.html');
         } catch (err) {
             errorEl.textContent = err.message;
             errorEl.style.display = 'block';
@@ -131,6 +130,9 @@ if (loginForm) {
     });
 } else {
     // si no es el login compruebo que haya sesión y construyo el menú
-    if (!obtenerToken()) window.location.href = '/index.html';
-    construirMenu();
+    if (!obtenerToken()) {
+        window.location.replace('/index.html');
+    } else {
+        construirMenu();
+    }
 }
