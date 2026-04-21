@@ -11,8 +11,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // la clave tiene que ser larga sino la librería da error
-    private static final String SECRET = "academia-secret-key-2024-must-be-at-least-256-bits-long-for-hmac-sha";
+    // si la clave es muy corta la librería falla, así que la pongo larga
+    private static final String SECRET = "tfg_academia_jose_manuel_2024_clave_jwt_superSecreta_nodivulgar";
     private static final long EXPIRACION = 24 * 60 * 60 * 1000; // 24 horas en ms
 
     private SecretKey obtenerClave() {
@@ -37,6 +37,7 @@ public class JwtUtil {
         return leerClaims(token).get("rol", String.class);
     }
 
+    // devuelve false si el token ha expirado o la firma no cuadra
     public boolean esValido(String token) {
         try {
             leerClaims(token);

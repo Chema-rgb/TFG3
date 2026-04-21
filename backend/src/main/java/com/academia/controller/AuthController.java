@@ -27,6 +27,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> iniciarSesion(@RequestBody LoginRequest request) {
+        // si las credenciales no son correctas Spring lanza una excepción sola
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );

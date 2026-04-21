@@ -3,6 +3,7 @@ const isAdmin = user?.rol === 'ADMIN';
 
 if (!isAdmin) document.getElementById('btnNuevaMatricula').style.display = 'none';
 
+// cargo alumnos y cursos en los selects del formulario
 async function cargarSelects() {
     var alumnos = await llamarApi('/alumnos');
     var cursos = await llamarApi('/cursos');
@@ -63,6 +64,7 @@ document.getElementById('btnNuevaMatricula')?.addEventListener('click', () => {
 });
 
 async function editarMatricula(id) {
+    // recargo todas las matriculas y busco la que quiero editar
     var matriculas = await llamarApi('/matriculas');
     const m = matriculas.find(x => x.id === id);
     if (!m) return;

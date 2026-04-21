@@ -1,3 +1,4 @@
+// cargo los selects de alumno y curso para el formulario de nuevo pago
 async function cargarSelects() {
     var alumnos = await llamarApi('/alumnos');
     var cursos = await llamarApi('/cursos');
@@ -21,6 +22,7 @@ async function cargarSelects() {
     }
 }
 
+// guardo todos los pagos aquí para filtrar sin llamar al backend cada vez
 var todosPagos = [];
 
 // cada botón llama a esto con su estado
@@ -78,6 +80,7 @@ document.getElementById('btnNuevoPago').addEventListener('click', () => {
 });
 
 async function editarPago(id) {
+    // aquí sí llamo directo a la api con el id del pago
     const p = await llamarApi('/pagos/' + id);
     if (!p) return;
     document.getElementById('pagoId').value = p.id;
@@ -106,6 +109,7 @@ document.getElementById('formPago').addEventListener('submit', async (e) => {
 
     const body = {
         alumno: { id: parseInt(document.getElementById('pagoAlumno').value) },
+        // el curso puede ser null si el pago no está ligado a ningún curso
         curso: cursoId ? { id: parseInt(cursoId) } : null,
         concepto: document.getElementById('pagoConcepto').value,
         importe: parseFloat(document.getElementById('pagoImporte').value),

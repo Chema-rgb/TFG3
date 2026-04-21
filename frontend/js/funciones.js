@@ -1,3 +1,5 @@
+// funciones comunes que uso en todas las páginas
+
 const API = 'http://localhost:8082/api';
 
 function obtenerToken() { return localStorage.getItem('token'); }
@@ -16,6 +18,7 @@ function verificarAcceso() {
     return true;
 }
 
+// compruebo que el usuario tenga uno de los roles que se le pasan
 function verificarRol(...roles) {
     var user = obtenerUsuario();
     if (!user || !roles.includes(user.rol)) {
@@ -25,7 +28,7 @@ function verificarRol(...roles) {
     return true;
 }
 
-// función genérica para todas las llamadas al backend
+// llamada genérica al backend, la uso desde todas las páginas para no repetir el fetch
 async function llamarApi(path, opts) {
     var metodo = opts ? opts.method || 'GET' : 'GET';
     var cuerpo = opts ? opts.body : null;
@@ -40,7 +43,7 @@ async function llamarApi(path, opts) {
         body: cuerpo || null
     });
 
-    if (res.status === 401) { cerrarSesion(); return null; }
+    if (res.status === 401) { cerrarSesion(); return null; } // token caducado
     if (!res.ok) {
         var msg = await res.text();
         throw new Error(msg || 'Error en la petición');
@@ -49,7 +52,6 @@ async function llamarApi(path, opts) {
     return res.json();
 }
 
-// pongo los links del menú según el rol que tenga el usuario
 function construirMenu() {
     const user = obtenerUsuario();
     if (!user) return;
@@ -76,7 +78,6 @@ function construirMenu() {
         { href: 'admin.html', label: 'Administración', roles: ['ADMIN'] },
     ];
 
-    // solo muestro los links que corresponden al rol del usuario
     links.filter(l => l.roles.includes(user.rol)).forEach(function(l) {
         const a = document.createElement('a');
         a.href = l.href;
@@ -86,13 +87,12 @@ function construirMenu() {
     });
 }
 
-// muestro un aviso verde abajo a la derecha cuando algo se guarda bien
 function mostrarExito(msg) {
     var toast = document.createElement('div');
     toast.className = 'toast-ok';
     toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(function() { document.body.removeChild(toast); }, 2500);
+    setTimeout(function() { document.body.removeChild(toast); }, 2500); // desaparece solo
 }
 
 function cerrarModal(id) {
@@ -121,7 +121,7 @@ if (loginForm) {
             if (!res.ok) throw new Error('Credenciales incorrectas');
             const data = await res.json();
             console.log(data);
-              localStorage.setItem('token', data.token);
+            localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify({ username: data.username, rol: data.rol }));
             window.location.href = 'pages/dashboard.html';
         } catch (err) {
@@ -130,6 +130,7 @@ if (loginForm) {
         }
     });
 } else {
+    // si no es el login compruebo que haya sesión y construyo el menú
     if (!obtenerToken()) window.location.href = '/index.html';
     construirMenu();
 }

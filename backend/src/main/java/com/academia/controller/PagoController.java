@@ -16,12 +16,14 @@ public class PagoController {
     @Autowired
     private PagoRepository pagoRepository;
 
+    // solo el admin puede ver todos los pagos
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Pago> listar() {
+    public List<Pago> listarPagos() {
         return pagoRepository.findAll();
     }
 
+    // este endpoint lo uso también para que los alumnos vean sus propios pagos
     @GetMapping("/alumno/{alumnoId}")
     public List<Pago> porAlumno(@PathVariable Long alumnoId) {
         return pagoRepository.findByAlumnoId(alumnoId);
@@ -29,7 +31,7 @@ public class PagoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Pago> obtener(@PathVariable Long id) {
+    public ResponseEntity<Pago> getPago(@PathVariable Long id) {
         Pago pago = pagoRepository.findById(id).orElse(null);
         if (pago == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(pago);
@@ -41,6 +43,7 @@ public class PagoController {
         return pagoRepository.save(pago);
     }
 
+    // actualizo todos los campos del pago
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Pago> actualizar(@PathVariable Long id, @RequestBody Pago datos) {
@@ -59,7 +62,7 @@ public class PagoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> borrar(@PathVariable Long id) {
         if (!pagoRepository.existsById(id)) return ResponseEntity.notFound().build();
         pagoRepository.deleteById(id);
         return ResponseEntity.noContent().build();

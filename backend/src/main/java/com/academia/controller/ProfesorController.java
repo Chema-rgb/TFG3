@@ -24,7 +24,7 @@ public class ProfesorController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
-    public List<Profesor> listar() {
+    public List<Profesor> listaProfesores() {
         return profesorRepository.findAll();
     }
 

@@ -23,13 +23,14 @@ public class CursoController {
     @Autowired
     private PagoRepository pagoRepository;
 
+    // cualquier usuario logueado puede ver los cursos
     @GetMapping
-    public List<Curso> listar() {
+    public List<Curso> getCursos() {
         return cursoRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Curso> obtener(@PathVariable Long id) {
+    public ResponseEntity<Curso> getCurso(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id).orElse(null);
         if (curso == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(curso);
@@ -37,15 +38,16 @@ public class CursoController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Curso crear(@RequestBody Curso curso) {
+    public Curso crearCurso(@RequestBody Curso curso) {
         return cursoRepository.save(curso);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Curso datos) {
+    public ResponseEntity<?> editarCurso(@PathVariable Long id, @RequestBody Curso datos) {
         Curso curso = cursoRepository.findById(id).orElse(null);
         if (curso == null) return ResponseEntity.notFound().build();
+        // valido que el precio no sea negativo
         if (datos.getPrecio() != null && datos.getPrecio() < 0) {
             return ResponseEntity.badRequest().body("El precio no puede ser negativo");
         }
@@ -59,10 +61,11 @@ public class CursoController {
         return ResponseEntity.ok(cursoRepository.save(curso));
     }
 
+    // borro primero los pagos y matrículas del curso para no tener problemas de foreign key
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> borrarCurso(@PathVariable Long id) {
         if (!cursoRepository.existsById(id)) return ResponseEntity.notFound().build();
         pagoRepository.deleteByCursoId(id);
         matriculaRepository.deleteByCursoId(id);

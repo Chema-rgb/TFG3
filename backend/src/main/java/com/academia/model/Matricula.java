@@ -3,6 +3,7 @@ package com.academia.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+// la restricción unique evita que un alumno se matricule dos veces en el mismo curso
 @Entity
 @Table(name = "matriculas", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"alumno_id", "curso_id"})

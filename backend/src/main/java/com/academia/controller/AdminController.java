@@ -47,7 +47,6 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    // datos del formulario
     public static class UsuarioRequest {
         private String username;
         private String password;

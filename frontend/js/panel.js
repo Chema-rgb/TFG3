@@ -3,11 +3,15 @@ const user = obtenerUsuario();
 async function cargarEstadisticas() {
     const statsGrid = document.getElementById('statsGrid');
     const actionsGrid = document.getElementById('actionsGrid');
+    const titulo = document.getElementById('panelTitulo');
+    const bienvenida = document.getElementById('bienvenidaProfesor');
+    const bienvenidaTexto = document.getElementById('bienvenidaTexto');
 
     var stats = [];
     var actions = [];
 
     if (user.rol === 'ADMIN') {
+        titulo.textContent = 'Panel de Administración';
         // el admin ve todos los contadores
         var alumnos = await llamarApi('/alumnos');
         var profesores = await llamarApi('/profesores');
@@ -27,11 +31,19 @@ async function cargarEstadisticas() {
         actions.push({ icon: '⚙️', label: 'Administración', href: 'admin.html' });
 
     } else if (user.rol === 'PROFESOR') {
+        titulo.textContent = 'Panel del Profesor';
+
+        // mostramos un saludo con el nombre del profesor
+        bienvenida.style.display = 'block';
+        bienvenidaTexto.textContent = 'Bienvenido, ' + user.username + '. Desde aquí puedes consultar los alumnos, cursos y matrículas.';
+
         var alumnos = await llamarApi('/alumnos');
         var cursos = await llamarApi('/cursos');
+        var matriculas = await llamarApi('/matriculas');
 
         stats.push({ number: alumnos ? alumnos.length : 0, label: 'Total Alumnos' });
         stats.push({ number: cursos ? cursos.length : 0, label: 'Total Cursos' });
+        stats.push({ number: matriculas ? matriculas.length : 0, label: 'Matrículas' });
 
         actions.push({ icon: '👨‍🎓', label: 'Alumnos', href: 'alumnos.html' });
         actions.push({ icon: '📚', label: 'Cursos', href: 'cursos.html' });

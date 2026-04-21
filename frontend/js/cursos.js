@@ -1,8 +1,10 @@
 const user = obtenerUsuario();
 const isAdmin = user?.rol === 'ADMIN';
 
+// solo el admin puede crear o modificar cursos
 if (!isAdmin) document.getElementById('btnNuevoCurso').style.display = 'none';
 
+// cargo los profesores en el select del formulario
 async function cargarProfesoresSelect() {
     var profesores = await llamarApi('/profesores');
     const select = document.getElementById('cursoProfesor');
@@ -31,6 +33,7 @@ async function cargarCursos() {
             acciones += '<button class="btn btn-sm btn-icon" onclick="editarCurso(' + c.id + ')">Editar</button>';
             acciones += '<button class="btn btn-sm btn-icon btn-danger" onclick="eliminarCurso(' + c.id + ')">Borrar</button>';
         }
+        // si el curso no tiene profesor asignado pongo un guión
         var profesor = c.profesor ? c.profesor.nombre + ' ' + c.profesor.apellidos : '-';
         html += '<tr>';
         html += '<td>' + c.id + '</td>';
@@ -54,6 +57,7 @@ document.getElementById('btnNuevoCurso')?.addEventListener('click', () => {
 });
 
 async function editarCurso(id) {
+    // en este caso sí llamo a la api porque necesito todos los datos del curso
     const c = await llamarApi('/cursos/' + id);
     document.getElementById('cursoId').value = c.id;
     document.getElementById('cursoNombre').value = c.nombre;
@@ -81,6 +85,7 @@ document.getElementById('formCurso').addEventListener('submit', async (e) => {
     const body = {
         nombre: document.getElementById('cursoNombre').value,
         nivel: document.getElementById('cursoNivel').value,
+        // si está vacío mando null, sino el backend lo guarda como string vacío
         capacidad: document.getElementById('cursoCapacidad').value || null,
         precio: document.getElementById('cursoPrecio').value || null,
         descripcion: document.getElementById('cursoDescripcion').value,

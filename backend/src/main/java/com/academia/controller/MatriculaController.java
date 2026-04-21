@@ -22,7 +22,7 @@ public class MatriculaController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
-    public List<Matricula> listar() {
+    public List<Matricula> todasLasMatriculas() {
         return matriculaRepository.findAll();
     }
 

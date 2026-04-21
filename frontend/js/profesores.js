@@ -1,6 +1,7 @@
 const user = obtenerUsuario();
 const isAdmin = user?.rol === 'ADMIN';
 
+// los profesores no pueden crear ni borrar otros profesores
 if (!isAdmin) document.getElementById('btnNuevoProfesor').style.display = 'none';
 
 var todosProfesores = [];
@@ -13,6 +14,7 @@ function buscar(texto) {
     var filtrados = [];
     for (var i = 0; i < todosProfesores.length; i++) {
         var p = todosProfesores[i];
+        // busco por nombre o apellidos
         if (p.nombre.toLowerCase().includes(texto.toLowerCase()) ||
             p.apellidos.toLowerCase().includes(texto.toLowerCase())) {
             filtrados.push(p);
@@ -62,6 +64,7 @@ document.getElementById('btnNuevoProfesor')?.addEventListener('click', () => {
     abrirModal('modalProfesor');
 });
 
+// busco el profesor en el array local para no hacer otra llamada a la api
 async function editarProfesor(id) {
     var p = todosProfesores.find(x => x.id === id);
     if (!p) return;
@@ -116,6 +119,7 @@ document.getElementById('formProfesor').addEventListener('submit', async (e) => 
         mostrarExito('Profesor guardado correctamente');
         cargarProfesores();
     } catch (err) {
+        // si el dni ya existe abro el modal de error específico
         if (err.message.includes('DNI')) {
             cerrarModal('modalProfesor');
             abrirModal('modalDniDuplicado');

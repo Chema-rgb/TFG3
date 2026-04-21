@@ -27,14 +27,14 @@ public class Usuario {
     @Column(nullable = false)
     private boolean activo = true;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
 
     public Usuario() {}
 
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
+        fechaCreacion = LocalDateTime.now();
     }
 
     public Long getId() { return id; }
@@ -55,8 +55,8 @@ public class Usuario {
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
     public enum Rol {
         ADMIN, PROFESOR, ALUMNO

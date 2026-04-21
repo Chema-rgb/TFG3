@@ -5,6 +5,7 @@ if (!isAdmin) document.getElementById('btnNuevoAlumno').style.display = 'none';
 
 var todosAlumnos = [];
 
+// filtro en local para no hacer una petición al backend cada vez que escribe algo
 function buscar(texto) {
     if (!texto) {
         mostrarAlumnos(todosAlumnos);
@@ -30,6 +31,8 @@ function mostrarAlumnos(alumnos) {
     var html = '';
     for (var i = 0; i < alumnos.length; i++) {
         var a = alumnos[i];
+        // el profesor solo puede ver, no editar ni borrar
+        // el profesor solo puede ver, no editar ni borrar
         var acciones = '';
         if (isAdmin) {
             acciones += '<button class="btn btn-sm btn-icon" onclick="editarAlumno(' + a.id + ')">Editar</button>';
@@ -52,7 +55,7 @@ function mostrarAlumnos(alumnos) {
 
 async function cargarAlumnos() {
     var alumnos = await llamarApi('/alumnos');
-    todosAlumnos = alumnos || []; // guardo aquí para el buscador
+    todosAlumnos = alumnos || [];
     mostrarAlumnos(todosAlumnos);
 }
 
@@ -63,16 +66,15 @@ document.getElementById('btnNuevoAlumno')?.addEventListener('click', () => {
     abrirModal('modalAlumno');
 });
 
-// cargo los datos del alumno en el formulario para editar
 async function editarAlumno(id) {
     const a = await llamarApi('/alumnos/' + id);
     document.getElementById('alumnoId').value = a.id;
-      document.getElementById('alumnoNombre').value = a.nombre;
+    document.getElementById('alumnoNombre').value = a.nombre;
     document.getElementById('alumnoApellidos').value = a.apellidos;
     document.getElementById('alumnoDni').value = a.dni || '';
     document.getElementById('alumnoTelefono').value = a.telefono || '';
     document.getElementById('alumnoDireccion').value = a.direccion || '';
-   document.getElementById('alumnoFechaNacimiento').value = a.fechaNacimiento || '';
+    document.getElementById('alumnoFechaNacimiento').value = a.fechaNacimiento || '';
     document.getElementById('alumnoEmail').value = a.email || '';
     document.getElementById('alumnoEstado').value = a.estado;
     document.getElementById('modalAlumnoTitle').textContent = 'Editar Alumno';
@@ -89,7 +91,6 @@ document.getElementById('formAlumno').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('alumnoId').value;
 
-    // compruebo que los campos obligatorios no estén vacíos
     if (!document.getElementById('alumnoNombre').value.trim()) {
         alert('El nombre es obligatorio');
         return;

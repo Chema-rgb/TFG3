@@ -146,21 +146,14 @@ async function cargarAdmins() {
     const usuarios = await llamarApi('/admin/usuarios');
     const tbody = document.getElementById('tbodyAdmins');
 
-    const admins = [];
-    if (usuarios) {
-        for (let i = 0; i < usuarios.length; i++) {
-            if (usuarios[i].rol === 'ADMIN') admins.push(usuarios[i]);
-        }
-    }
-
-    if (admins.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No hay administradores</td></tr>';
+    if (!usuarios || usuarios.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No hay usuarios</td></tr>';
         return;
     }
 
     let html = '';
-    for (let i = 0; i < admins.length; i++) {
-        const u = admins[i];
+    for (let i = 0; i < usuarios.length; i++) {
+        const u = usuarios[i];
         const fechaTexto = u.createdAt ? u.createdAt.substring(0, 10) : '-';
         let accionHtml;
         // no puede borrarse a sí mismo
@@ -173,6 +166,7 @@ async function cargarAdmins() {
         html += '<td>' + u.id + '</td>';
         html += '<td>' + u.username + '</td>';
         html += '<td>' + (u.email || '-') + '</td>';
+        html += '<td><span class="badge badge-' + u.rol.toLowerCase() + '">' + u.rol + '</span></td>';
         html += '<td>' + fechaTexto + '</td>';
         html += '<td class="actions-cell">' + accionHtml + '</td>';
         html += '</tr>';
@@ -204,7 +198,7 @@ document.getElementById('formAdmin').addEventListener('submit', async function(e
                 username: document.getElementById('adminUsername').value,
                 password: document.getElementById('adminPassword').value,
                 email:    document.getElementById('adminEmail').value,
-                rol:      'ADMIN'
+                rol:      document.getElementById('adminRol').value
             })
         });
         cerrarModal('modalAdmin');

@@ -37,10 +37,11 @@ public class Alumno {
 
     public Alumno() {}
 
+    // esto se ejecuta automáticamente justo antes de guardar en base de datos
     @PrePersist
     public void prePersist() {
         if (fechaInscripcion == null) {
-            fechaInscripcion = LocalDate.now();
+            fechaInscripcion = LocalDate.now(); // pongo la fecha de hoy si no se especifica
         }
         if (estado == null) estado = Estado.ACTIVO;
     }
