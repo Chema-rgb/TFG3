@@ -7,7 +7,7 @@ backend/.mvn/
 # IDE
 .idea/
 *.iml
-.vscode/settings.json
+.vscode/
 .classpath
 .project
 .settings/
